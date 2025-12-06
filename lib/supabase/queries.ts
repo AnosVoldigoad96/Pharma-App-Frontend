@@ -363,9 +363,9 @@ export async function submitContactForm(
         email,
         subject,
         message,
-        status: 'new',
+        status: 'new' as const,
       },
-    ])
+    ] as any)
     .select()
     .single()
 
@@ -400,9 +400,9 @@ export async function submitRequest(
         description,
         user_name: userName || null,
         user_email: userEmail || null,
-        status: 'pending',
+        status: 'pending' as const,
       },
-    ])
+    ] as any)
     .select()
     .single()
 

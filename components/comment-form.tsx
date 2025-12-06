@@ -72,7 +72,7 @@ export function CommentForm({ threadId, threadSlug, isLocked, onCommentAdded }: 
 
       const { error: insertError } = await supabase
         .from("comments")
-        .insert([commentData]);
+        .insert([commentData] as any);
 
       if (insertError) {
         setError(insertError.message || "Failed to submit comment. Please try again.");

@@ -89,12 +89,12 @@ export function BookCard({ book }: BookCardProps) {
         .from("requests")
         .insert([
           {
-            type: "book",
+            type: "book" as const,
             title: book.title,
             description: `Request for book: ${book.title}${book.author ? ` by ${book.author}` : ""}`,
-            status: "pending",
+            status: "pending" as const,
           },
-        ]);
+        ] as any);
 
       if (error) {
         console.error("Error submitting request:", error);

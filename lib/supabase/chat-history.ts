@@ -25,7 +25,7 @@ export async function saveChatMessage(
     session_id: sessionId,
     role: role,
     content: content,
-  });
+  } as any);
 
   if (error) {
     console.error("Error saving chat message:", error);
