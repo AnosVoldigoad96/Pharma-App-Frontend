@@ -1,0 +1,112 @@
+import { getThreads, getPageContent } from "@/lib/supabase/queries";
+import { ThreadsClient } from "@/components/threads-client";
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { MessageSquare } from "lucide-react";
+
+export default async function ThreadsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ search?: string; featured?: string }> | { search?: string; featured?: string };
+}) {
+  // Handle both Promise and direct object (Next.js 15+ compatibility)
+  const params = searchParams instanceof Promise ? await searchParams : searchParams;
+  const search = params?.search;
+
+  const [threadsResult, pageContentResult] = await Promise.all([
+    getThreads(),
+    getPageContent("threads"),
+  ]);
+
+  const threads = threadsResult.data || [];
+  let pageContent = pageContentResult.data;
+
+  // Extract hero section data
+  const heroSection = pageContent?.hero_section as Record<string, any> | null;
+  const heading = heroSection?.heading || heroSection?.title || null;
+  const subtitle = heroSection?.subheading || heroSection?.subtitle || null;
+  const image = heroSection?.image || heroSection?.background_image || null;
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      {heroSection && (heading || subtitle) && (
+        <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
+          {image ? (
+            <>
+              <Image
+                src={image}
+                alt={heading || "Threads Hero"}
+                fill
+                className="object-cover"
+                priority
+                unoptimized
+              />
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-primary/30 to-accent/30 flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+                <div className="mx-auto max-w-7xl px-4 text-center text-white relative z-10">
+                  {heading && (
+                    <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent drop-shadow-2xl">
+                      {heading}
+                    </h1>
+                  )}
+                  {subtitle && (
+                    <p className="text-xl md:text-2xl text-white/95 max-w-3xl mx-auto drop-shadow-lg">
+                      {subtitle}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="h-full flex items-center justify-center bg-gradient-to-br from-primary/20 via-primary/10 to-accent/10 relative overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,oklch(0.7686_0.1647_70.0804/0.15),transparent_50%)]" />
+              <div className="mx-auto max-w-7xl px-4 text-center relative z-10">
+                {heading && (
+                  <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+                    {heading}
+                  </h1>
+                )}
+                {subtitle && (
+                  <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
+                    {subtitle}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Main Content */}
+      <div className="relative w-full py-12 bg-gradient-to-br from-background via-primary/5 to-background overflow-hidden">
+        {/* Decorative gradient overlay */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,oklch(0.7686_0.1647_70.0804/0.05),transparent_70%)] pointer-events-none" />
+        <div className="mx-auto max-w-7xl px-4 relative z-10">
+          {/* Header with New Thread Button */}
+          <div className="mb-8 flex items-center justify-between">
+            {!heroSection && (
+              <div>
+                <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">Community Discussions</h1>
+                <p className="text-muted-foreground">
+                  Join the conversation and share your knowledge
+                </p>
+              </div>
+            )}
+            <Button asChild>
+              <Link href="/threads/new" className="flex items-center gap-2">
+                <MessageSquare className="h-4 w-4" />
+                New Thread
+              </Link>
+            </Button>
+          </div>
+
+          {/* Threads List with Filters */}
+          <ThreadsClient threads={threads} initialSearch={search} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
