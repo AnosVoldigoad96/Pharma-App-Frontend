@@ -63,7 +63,7 @@ export default function EditProfilePage() {
       if (updateError) {
         const errorMessage = updateError instanceof Error 
           ? updateError.message 
-          : updateError?.message || "Failed to update profile. Please try again.";
+          : (updateError as any)?.message || "Failed to update profile. Please try again.";
         setError(errorMessage);
       } else {
         setSuccess(true);
