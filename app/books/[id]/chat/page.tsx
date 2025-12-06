@@ -83,7 +83,7 @@ export default function ChatbotPage() {
         .from("chatbots")
         .select("*")
         .eq("linked_book_id", bookId)
-        .single();
+        .single<Chatbot>();
 
       if (!error && chatbotData) {
         setChatbot(chatbotData as Chatbot);
