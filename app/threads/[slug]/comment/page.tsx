@@ -67,7 +67,7 @@ export default function CommentPage() {
         .from("threads")
         .select("id, is_locked")
         .eq("slug", slug)
-        .single();
+        .single<{ id: string; is_locked: boolean }>();
 
       if (threadError || !thread) {
         setSubmitStatus({
@@ -99,7 +99,7 @@ export default function CommentPage() {
 
       const { data, error } = await supabase
         .from("comments")
-        .insert([commentData])
+        .insert([commentData] as any)
         .select()
         .single();
 
