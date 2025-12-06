@@ -93,7 +93,7 @@ export default function NewThreadPage() {
 
       const { data, error } = await supabase
         .from("threads")
-        .insert([threadData])
+        .insert([threadData] as any)
         .select()
         .single();
 
