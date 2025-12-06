@@ -51,7 +51,7 @@ export default async function RootLayout({
             <div className="flex flex-col min-h-screen">
               <Navigation 
                 brandName={settings?.brand_name || "ePharmatica"}
-                brandLogo={settings?.brand_logo}
+                brandLogo={settings?.brand_logo || null}
               />
               <main className="flex-1">
                 {children}
