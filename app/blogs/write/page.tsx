@@ -39,7 +39,7 @@ export default function WriteBlogPage() {
         .from("site_settings")
         .select("brand_name")
         .limit(1)
-        .single();
+        .single<{ brand_name: string | null }>();
       if (data?.brand_name) {
         setBrandName(data.brand_name);
       }
