@@ -1,5 +1,6 @@
 // Data fetching utilities for Supabase tables
-import { supabase } from './client'
+import { supabase as supabaseClient } from './client'
+const supabase = supabaseClient as any
 import type {
   AboutUs,
   Blog,
@@ -38,26 +39,26 @@ export async function getBlogs(limit?: number, featured?: boolean) {
   }
 
   const { data: blogsData, error: blogsError } = await query
-  
+
   if (blogsError || !blogsData) {
     return { data: blogsData?.map((blog: any) => ({ ...blog, author: null })) as Blog[] | null, error: blogsError }
   }
 
   // Step 2: Get all unique user_ids from blogs
   const userIds = [...new Set(blogsData.filter((blog: any) => blog.user_id).map((blog: any) => blog.user_id))]
-  
+
   // Step 3: Fetch authors from public_users table
   let authorsMap: Record<string, any> = {}
-  
+
   if (userIds.length > 0) {
     // Query public_users by id (blogs.user_id should match public_users.id)
     const { data: authorsData } = await supabase
       .from('public_users')
       .select('id, full_name, avatar_url, email')
       .in('id', userIds)
-    
+
     if (authorsData && authorsData.length > 0) {
-      authorsData.forEach(author => {
+      authorsData.forEach((author: any) => {
         authorsMap[author.id] = {
           id: author.id,
           full_name: author.full_name,
@@ -71,9 +72,9 @@ export async function getBlogs(limit?: number, featured?: boolean) {
         .from('public_users')
         .select('id, full_name, avatar_url, email, user_id')
         .in('user_id', userIds)
-      
+
       if (altAuthorsData && altAuthorsData.length > 0) {
-        altAuthorsData.forEach(author => {
+        altAuthorsData.forEach((author: any) => {
           authorsMap[author.user_id] = {
             id: author.id,
             full_name: author.full_name,
@@ -109,7 +110,7 @@ export async function getBlogBySlug(slug: string) {
 
   // Step 2: Fetch author from public_users if user_id exists
   let author = null
-  
+
   if (blogData.user_id) {
     // Try by id first (blogs.user_id -> public_users.id)
     const { data: authorData } = await supabase
@@ -144,9 +145,9 @@ export async function getBlogBySlug(slug: string) {
     }
   }
 
-  return { 
-    data: { ...blogData, author } as Blog, 
-    error: null 
+  return {
+    data: { ...blogData, author } as Blog,
+    error: null
   }
 }
 
@@ -275,7 +276,7 @@ export async function getToolCategories() {
 
   // Extract unique categories
   const uniqueCategories = Array.from(
-    new Set(data.map((tool) => tool.category).filter(Boolean))
+    new Set(data.map((tool: any) => tool.category).filter(Boolean))
   ).map((category) => ({
     id: category as string,
     name: category as string,
