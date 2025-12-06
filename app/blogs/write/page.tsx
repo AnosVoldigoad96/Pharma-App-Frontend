@@ -203,7 +203,7 @@ export default function WriteBlogPage() {
 
       const { data, error } = await supabase
         .from("blogs")
-        .insert([blogData])
+        .insert([blogData] as any)
         .select()
         .single();
 
