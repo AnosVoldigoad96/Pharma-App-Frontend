@@ -277,13 +277,15 @@ export const NavbarButton = ({
       "bg-gradient-to-r from-primary to-chart-5 text-primary-foreground border-2 border-primary/30 hover:border-primary/50",
   };
 
+  const Component = Tag as React.ElementType<{ href?: string; className?: string; children?: React.ReactNode; [key: string]: any }>;
+
   return (
-    <Tag
+    <Component
       href={href || undefined}
       className={cn(baseStyles, variantStyles[variant], className)}
-      {...props}
+      {...(props as any)}
     >
       {children}
-    </Tag>
+    </Component>
   );
 };

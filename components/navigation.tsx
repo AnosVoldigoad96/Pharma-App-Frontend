@@ -83,14 +83,9 @@ export function Navigation({ brandName, brandLogo }: NavigationProps) {
               </NavbarButton>
             </>
           ) : (
-            <>
-              <NavbarButton href="/login" variant="secondary">
-                Sign In
-              </NavbarButton>
-              <NavbarButton href="/signup" variant="primary">
-                Get Started
-              </NavbarButton>
-            </>
+            <NavbarButton href="/login" variant="secondary">
+              Sign In
+            </NavbarButton>
           )}
         </div>
       </NavBody>
@@ -159,14 +154,9 @@ export function Navigation({ brandName, brandLogo }: NavigationProps) {
                 </Button>
               </>
             ) : (
-              <div className="flex flex-col gap-3">
-                <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full">
-                  <Button variant="ghost" className="w-full justify-start">Sign In</Button>
-                </Link>
-                <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="w-full">
-                  <Button className="w-full">Get Started</Button>
-                </Link>
-              </div>
+              <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full">
+                <Button variant="secondary" className="w-full">Sign In</Button>
+              </Link>
             )}
           </div>
         </MobileNavMenu>

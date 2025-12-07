@@ -227,7 +227,9 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
         </RigidBody>
       </group>
       <mesh ref={band}>
+        {/* @ts-ignore - meshline custom elements */}
         <meshLineGeometry />
+        {/* @ts-ignore - meshline custom elements */}
         <meshLineMaterial
           color="white"
           depthTest={false}

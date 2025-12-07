@@ -1,7 +1,5 @@
-"use client";
-
 import Image from "next/image";
-import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
+import { Card, CardContent } from "@/components/ui/card";
 import type { Feature } from "@/lib/supabase/types";
 
 interface FeaturesSectionProps {
@@ -13,33 +11,42 @@ export function FeaturesSection({ features }: FeaturesSectionProps) {
     return null;
   }
 
-  const content = features.map((feature) => ({
-    title: feature.title,
-    description: feature.description,
-    content: feature.image ? (
-      <div className="relative h-full w-full overflow-hidden rounded-md">
-        <Image
-          src={feature.image}
-          alt={feature.title}
-          fill
-          className="object-cover"
-          unoptimized
-        />
-      </div>
-    ) : (
-      <div className="flex h-full w-full items-center justify-center rounded-md bg-primary/20">
-        <p className="text-sm text-muted-foreground">No image available</p>
-      </div>
-    ),
-  }));
-
   return (
-    <section className="bg-background">
-      <StickyScroll
-        content={content}
-        headerTitle="Our Features"
-        headerDescription="Discover what makes ePharmatica the leading pharmaceutical knowledge platform"
-      />
+    <section className="py-16 md:py-24 bg-background">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Features</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Discover what makes ePharmatica the leading pharmaceutical knowledge platform
+          </p>
+        </div>
+
+        {/* Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {features.map((feature) => (
+            <Card key={feature.id} className="overflow-hidden border-2 border-border hover:border-primary/50 transition-colors">
+              {feature.image && (
+                <div className="relative h-48 w-full overflow-hidden">
+                  <Image
+                    src={feature.image}
+                    alt={feature.title}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                </div>
+              )}
+              <CardContent className="p-6">
+                <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
+                {feature.description && (
+                  <p className="text-muted-foreground">{feature.description}</p>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }

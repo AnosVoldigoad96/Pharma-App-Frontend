@@ -1,4 +1,4 @@
-export { };
+/// <reference types="react" />
 
 declare module '*.glb' {
   const value: string;
@@ -18,9 +18,11 @@ declare module 'meshline' {
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      meshLineGeometry: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-      meshLineMaterial: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+      meshLineGeometry: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & Record<string, any>;
+      meshLineMaterial: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & Record<string, any>;
     }
   }
 }
+
+export {};
 
