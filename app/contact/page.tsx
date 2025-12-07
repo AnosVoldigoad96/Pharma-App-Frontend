@@ -33,7 +33,7 @@ export default async function ContactPage() {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       {heroImage ? (
-        <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
+        <section className="relative w-full min-h-[500px] md:min-h-[600px] overflow-hidden">
           <Image
             src={heroImage}
             alt={heroHeading}
@@ -55,14 +55,18 @@ export default async function ContactPage() {
           </div>
         </section>
       ) : (
-        <section className="mx-auto max-w-7xl px-4 py-16 md:py-24">
-          <div className="text-center space-y-6">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-              {heroHeading}
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              {heroSubtitle}
-            </p>
+        <section className="relative w-full min-h-[500px] md:min-h-[600px] overflow-hidden">
+          <div className="w-full h-full bg-gradient-to-br from-primary/25 via-chart-5/20 to-chart-4/20 flex items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--primary)/0.2,transparent_50%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,var(--chart-4)/0.15,transparent_50%)]" />
+            <div className="mx-auto max-w-7xl px-4 text-center relative z-10 py-16 md:py-24">
+              <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+                {heroHeading}
+              </h1>
+              <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">
+                {heroSubtitle}
+              </p>
+            </div>
           </div>
         </section>
       )}

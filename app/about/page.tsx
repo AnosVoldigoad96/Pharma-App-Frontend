@@ -72,7 +72,7 @@ export default async function AboutPage() {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       {heroImage ? (
-        <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
+        <section className="relative w-full min-h-[500px] md:min-h-[600px] overflow-hidden">
           <Image
             src={heroImage}
             alt={heroHeading}
@@ -81,7 +81,7 @@ export default async function AboutPage() {
             priority
             unoptimized
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-primary/30 to-accent/30 flex items-center justify-center">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/50 via-chart-5/40 to-chart-4/40 flex items-center justify-center">
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
             <div className="mx-auto max-w-7xl px-4 text-center text-white relative z-10">
               <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent drop-shadow-2xl">
@@ -94,23 +94,28 @@ export default async function AboutPage() {
           </div>
         </section>
       ) : (
-        <section className="mx-auto max-w-7xl px-4 py-16 md:py-24">
-          <div className="text-center space-y-6">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-              {heroHeading}
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              {heroSubtitle}
-            </p>
+        <section className="relative w-full min-h-[500px] md:min-h-[600px] overflow-hidden">
+          <div className="w-full h-full bg-gradient-to-br from-primary/25 via-chart-5/20 to-chart-4/20 flex items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--primary)/0.2,transparent_50%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,var(--chart-4)/0.15,transparent_50%)]" />
+            <div className="mx-auto max-w-7xl px-4 text-center relative z-10 py-16 md:py-24">
+              <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+                {heroHeading}
+              </h1>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                {heroSubtitle}
+              </p>
+            </div>
           </div>
         </section>
       )}
 
       {/* Mission & Vision */}
       {(missionContent || visionContent) && (
-        <section className="relative w-full py-12 md:py-16 bg-gradient-to-br from-background via-primary/5 to-background overflow-hidden">
+        <section className="relative w-full py-12 md:py-16 bg-gradient-to-br from-background via-primary/10 to-chart-4/10 overflow-hidden">
           {/* Decorative gradient overlay */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,oklch(0.7686_0.1647_70.0804/0.05),transparent_70%)] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--primary)/0.12,transparent_70%)] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,var(--chart-4)/0.1,transparent_70%)] pointer-events-none" />
           <div className="mx-auto max-w-7xl px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
             {missionContent && (
@@ -143,9 +148,10 @@ export default async function AboutPage() {
 
       {/* What We Offer */}
       {features.length > 0 && (
-        <section className="relative w-full py-12 md:py-16 bg-gradient-to-br from-muted/50 via-muted/30 to-background overflow-hidden">
+        <section className="relative w-full py-12 md:py-16 bg-gradient-to-br from-secondary/30 via-chart-3/15 to-background overflow-hidden">
           {/* Decorative gradient overlay */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,oklch(0.7686_0.1647_70.0804/0.08),transparent_60%)] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--chart-3)/0.15,transparent_60%)] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,var(--secondary)/0.12,transparent_60%)] pointer-events-none" />
           <div className="mx-auto max-w-7xl px-4">
             <div className="text-center mb-12 relative z-10">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">{featuresTitle}</h2>
@@ -182,7 +188,10 @@ export default async function AboutPage() {
 
       {/* Core Values */}
       {values.length > 0 && (
-        <section className="relative w-full py-12 md:py-16 bg-gradient-to-br from-background via-accent/5 to-background overflow-hidden">
+        <section className="relative w-full py-12 md:py-16 bg-gradient-to-br from-background via-chart-5/10 to-chart-3/10 overflow-hidden">
+          {/* Decorative gradient overlay */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--chart-5)/0.12,transparent_70%)] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,var(--chart-3)/0.1,transparent_70%)] pointer-events-none" />
           {/* Decorative gradient overlay */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,oklch(0.9869_0.0214_95.2774/0.06),transparent_70%)] pointer-events-none" />
           <div className="mx-auto max-w-7xl px-4">

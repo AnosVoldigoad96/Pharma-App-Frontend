@@ -133,7 +133,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
 
       {/* Cover Image */}
       {blog.cover_image && (
-        <div className="relative w-full h-[400px] md:h-[500px] overflow-hidden mb-8">
+        <div className="relative w-full min-h-[500px] md:min-h-[600px] overflow-hidden mb-8">
           <Image
             src={blog.cover_image}
             alt={blog.title}

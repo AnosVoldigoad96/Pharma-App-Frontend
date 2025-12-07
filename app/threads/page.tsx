@@ -32,7 +32,7 @@ export default async function ThreadsPage({
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       {heroSection && (heading || subtitle) && (
-        <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
+        <section className="relative w-full min-h-[500px] md:min-h-[600px] overflow-hidden">
           {image ? (
             <>
               <Image
@@ -43,7 +43,7 @@ export default async function ThreadsPage({
                 priority
                 unoptimized
               />
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-primary/30 to-accent/30 flex items-center justify-center">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/50 via-chart-5/40 to-chart-4/40 flex items-center justify-center">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
                 <div className="mx-auto max-w-7xl px-4 text-center text-white relative z-10">
                   {heading && (
@@ -60,8 +60,9 @@ export default async function ThreadsPage({
               </div>
             </>
           ) : (
-            <div className="h-full flex items-center justify-center bg-gradient-to-br from-primary/20 via-primary/10 to-accent/10 relative overflow-hidden">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,oklch(0.7686_0.1647_70.0804/0.15),transparent_50%)]" />
+            <div className="h-full flex items-center justify-center bg-gradient-to-br from-primary/25 via-chart-5/20 to-chart-4/20 relative overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--primary)/0.2,transparent_50%)]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,var(--chart-4)/0.15,transparent_50%)]" />
               <div className="mx-auto max-w-7xl px-4 text-center relative z-10">
                 {heading && (
                   <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
@@ -80,9 +81,10 @@ export default async function ThreadsPage({
       )}
 
       {/* Main Content */}
-      <div className="relative w-full py-12 bg-gradient-to-br from-background via-primary/5 to-background overflow-hidden">
+      <div className="relative w-full py-12 bg-gradient-to-br from-background via-chart-5/10 to-chart-3/10 overflow-hidden">
         {/* Decorative gradient overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,oklch(0.7686_0.1647_70.0804/0.05),transparent_70%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--primary)/0.12,transparent_70%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,var(--chart-5)/0.1,transparent_70%)] pointer-events-none" />
         <div className="mx-auto max-w-7xl px-4 relative z-10">
           {/* Header with New Thread Button */}
           <div className="mb-8 flex items-center justify-between">

@@ -31,7 +31,7 @@ export default async function ToolsPage({
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       {heroSection && (heading || subtitle) && (
-        <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
+        <section className="relative w-full min-h-[500px] md:min-h-[600px] overflow-hidden">
           {image ? (
             <>
               <Image
@@ -42,15 +42,16 @@ export default async function ToolsPage({
                 priority
                 unoptimized
               />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <div className="mx-auto max-w-7xl px-4 text-center text-white">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/50 via-chart-5/40 to-chart-4/40 flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+                <div className="mx-auto max-w-7xl px-4 text-center text-white relative z-10">
                   {heading && (
-                    <h1 className="text-4xl md:text-6xl font-bold mb-4">
+                    <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent drop-shadow-2xl">
                       {heading}
                     </h1>
                   )}
                   {subtitle && (
-                    <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
+                    <p className="text-xl md:text-2xl text-white/95 max-w-3xl mx-auto drop-shadow-lg">
                       {subtitle}
                     </p>
                   )}
@@ -58,10 +59,12 @@ export default async function ToolsPage({
               </div>
             </>
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
-              <div className="mx-auto max-w-7xl px-4 text-center">
+            <div className="w-full h-full bg-gradient-to-br from-primary/25 via-chart-5/20 to-chart-4/20 flex items-center justify-center relative overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--primary)/0.2,transparent_50%)]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,var(--chart-4)/0.15,transparent_50%)]" />
+              <div className="mx-auto max-w-7xl px-4 text-center relative z-10">
                 {heading && (
-                  <h1 className="text-4xl md:text-6xl font-bold mb-4 text-foreground">
+                  <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
                     {heading}
                   </h1>
                 )}
@@ -77,9 +80,10 @@ export default async function ToolsPage({
       )}
 
       {/* Main Content */}
-      <div className="relative w-full py-12 bg-gradient-to-br from-background via-accent/5 to-background overflow-hidden">
+      <div className="relative w-full py-12 bg-gradient-to-br from-background via-chart-3/10 to-chart-2/10 overflow-hidden">
         {/* Decorative gradient overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,oklch(0.9869_0.0214_95.2774/0.06),transparent_60%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,var(--chart-3)/0.15,transparent_60%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_70%,var(--chart-2)/0.12,transparent_60%)] pointer-events-none" />
         <div className="mx-auto max-w-7xl px-4 relative z-10">
           {!heroSection && (
             <div className="mb-8">
