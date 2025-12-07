@@ -11,6 +11,7 @@ import type {
   Comment,
   ContactSubmission,
   FAQ,
+  Feature,
   PageContent,
   PublicUser,
   Request,
@@ -336,6 +337,17 @@ export async function getSEOMetadata(slug: string) {
     .single()
 
   return { data: data as SEOMetadata | null, error }
+}
+
+// ==================== FEATURES ====================
+export async function getFeatures() {
+  const { data, error } = await supabase
+    .from('features')
+    .select('*')
+    .eq('is_active', true)
+    .order('display_order', { ascending: true })
+
+  return { data: data as Feature[] | null, error }
 }
 
 // ==================== ABOUT US ====================

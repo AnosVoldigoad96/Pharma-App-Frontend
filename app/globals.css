@@ -69,40 +69,40 @@
 }
 
 :root {
-  /* Main Backgrounds */
-  --background: #FFFFFF;
-  --foreground: #2D3436;
+  /* Main Backgrounds - Pure Black */
+  --background: #000000;
+  --foreground: #FFFFFF;
 
   /* Cards & Popovers */
-  --card: #FFFFFF;
-  --card-foreground: #2D3436;
-  --popover: #FFFFFF;
-  --popover-foreground: #2D3436;
+  --card: #1A1A1A;
+  --card-foreground: #FFFFFF;
+  --popover: #1A1A1A;
+  --popover-foreground: #FFFFFF;
 
   /* Primary Colors - Vibrant Purple */
   --primary: #6C5CE7;
   --primary-foreground: #FFFFFF;
 
-  /* Secondary Colors - Pastel Pink/Orange/Blue mixture for accents */
-  --secondary: #FDECEC;
-  --secondary-foreground: #6C5CE7;
+  /* Secondary Colors */
+  --secondary: #1A1A1A;
+  --secondary-foreground: #FFFFFF;
 
   /* Muted Colors */
-  --muted: #F8F9FA;
-  --muted-foreground: #B2BEC3;
+  --muted: #1A1A1A;
+  --muted-foreground: #A0A0A0;
 
   /* Accent Colors */
-  --accent: #F8F9FA;
-  --accent-foreground: #6C5CE7;
+  --accent: #2A2A2A;
+  --accent-foreground: #FFFFFF;
 
   /* Destructive */
   --destructive: #FF7675;
   --destructive-foreground: #FFFFFF;
 
   /* Borders & Inputs */
-  --border: #E6E6FA;
-  --input: #E6E6FA;
-  --ring: #8C7AE6;
+  --border: #333333;
+  --input: #1A1A1A;
+  --ring: #6C5CE7;
 
   /* Charts - Using the palette */
   --chart-1: #6C5CE7;
@@ -116,15 +116,15 @@
   --chart-5: #8C7AE6;
   /* Soft Purple */
 
-  /* Sidebar (keeping consistent with main theme) */
-  --sidebar: #FFFFFF;
-  --sidebar-foreground: #2D3436;
+  /* Sidebar */
+  --sidebar: #000000;
+  --sidebar-foreground: #FFFFFF;
   --sidebar-primary: #6C5CE7;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #FDECEC;
-  --sidebar-accent-foreground: #6C5CE7;
-  --sidebar-border: #E6E6FA;
-  --sidebar-ring: #8C7AE6;
+  --sidebar-accent: #1A1A1A;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #333333;
+  --sidebar-ring: #6C5CE7;
 
   /* Typography & Radius */
   --font-sans: Inter, sans-serif;
@@ -157,54 +157,6 @@
   --letter-spacing: 0em;
 }
 
-.dark {
-  /* Dark Mode - Adapted for "Clean, Modern, SaaS" but in dark */
-  --background: #1A1B1E;
-  /* Dark Blue-Grey */
-  --foreground: #FFFFFF;
-
-  --card: #25262B;
-  --card-foreground: #FFFFFF;
-  --popover: #25262B;
-  --popover-foreground: #FFFFFF;
-
-  --primary: #8C7AE6;
-  /* Soft Purple for better contrast */
-  --primary-foreground: #FFFFFF;
-
-  --secondary: #2C2E33;
-  --secondary-foreground: #8C7AE6;
-
-  --muted: #2C2E33;
-  --muted-foreground: #A4B0BE;
-
-  --accent: #2C2E33;
-  --accent-foreground: #8C7AE6;
-
-  --destructive: #FF7675;
-  --destructive-foreground: #FFFFFF;
-
-  --border: #373A40;
-  --input: #373A40;
-  --ring: #6C5CE7;
-
-  --chart-1: #8C7AE6;
-  --chart-2: #FF7675;
-  --chart-3: #FAB1A0;
-  --chart-4: #74B9FF;
-  --chart-5: #6C5CE7;
-
-  --sidebar: #1A1B1E;
-  --sidebar-foreground: #FFFFFF;
-  --sidebar-primary: #8C7AE6;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #2C2E33;
-  --sidebar-accent-foreground: #8C7AE6;
-  --sidebar-border: #373A40;
-  --sidebar-ring: #6C5CE7;
-
-  --shadow-color: rgba(0, 0, 0, 0.3);
-}
 
 @layer base {
   * {
@@ -214,8 +166,7 @@
   body {
     @apply bg-background text-foreground;
     letter-spacing: var(--tracking-normal);
-    background-image: linear-gradient(135deg, #FDECEC 0%, #FFFFFF 50%, #E6E6FA 100%);
-    background-attachment: fixed;
+    background-color: #000000;
   }
 }
 
@@ -298,8 +249,10 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.dark .glass-effect {
-  background: rgba(0, 0, 0, 0.3);
+.glass-effect {
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 

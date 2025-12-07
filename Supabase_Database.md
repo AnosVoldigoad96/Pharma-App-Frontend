@@ -104,6 +104,17 @@ CREATE TABLE public.faqs (
   updated_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
   CONSTRAINT faqs_pkey PRIMARY KEY (id)
 );
+CREATE TABLE public.features (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  title text NOT NULL,
+  description text NOT NULL,
+  image text,
+  display_order integer DEFAULT 0,
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT features_pkey PRIMARY KEY (id)
+);
 CREATE TABLE public.page_content (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   page_slug text NOT NULL UNIQUE,

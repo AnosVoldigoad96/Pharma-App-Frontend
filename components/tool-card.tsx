@@ -13,7 +13,7 @@ export function ToolCard({ tool }: ToolCardProps) {
 
   if (!toolUrl) {
     return (
-      <div className="group relative block rounded-lg hover:shadow-lg transition-shadow bg-card border h-full flex flex-col opacity-50">
+      <div className="group relative block rounded-md transition-all bg-card border-2 border-border h-full flex flex-col opacity-50">
         <div className="relative z-10 rounded-lg overflow-hidden h-full flex flex-col">
           <div className="p-4 flex flex-col h-full">
             <h3 className="text-lg font-semibold mb-2 line-clamp-2">{tool.title}</h3>
@@ -34,7 +34,7 @@ export function ToolCard({ tool }: ToolCardProps) {
   }
 
   return (
-    <div className="group relative block rounded-lg hover:shadow-lg transition-shadow bg-card border h-full flex flex-col">
+    <div className="group relative block rounded-md transition-all bg-card border-2 border-border hover:border-primary/50 h-full flex flex-col">
       <GlowingEffect
         disabled={false}
         spread={30}
@@ -44,7 +44,7 @@ export function ToolCard({ tool }: ToolCardProps) {
         blur={0}
         borderWidth={1}
       />
-      <div className="relative z-10 rounded-lg overflow-hidden h-full flex flex-col">
+      <div className="relative z-10 rounded-md overflow-hidden h-full flex flex-col">
         <div className="p-4 flex flex-col h-full">
           <Link href={toolUrl} className="relative z-20 block">
             <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors line-clamp-2">
@@ -67,7 +67,7 @@ export function ToolCard({ tool }: ToolCardProps) {
             )}
             <Link
               href={toolUrl}
-              className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors relative z-20"
+              className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 border-2 border-primary/30 hover:border-primary/50 transition-all relative z-20 cursor-pointer"
             >
               Use Tool
             </Link>

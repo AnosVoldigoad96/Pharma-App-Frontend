@@ -113,7 +113,7 @@ export function BookCard({ book }: BookCardProps) {
 
 
   return (
-    <div className="group relative block rounded-lg hover:shadow-lg transition-shadow bg-card border">
+    <div className="group relative block rounded-md transition-all bg-card border-2 border-border hover:border-primary/50">
       <GlowingEffect
         disabled={false}
         spread={30}
@@ -123,7 +123,7 @@ export function BookCard({ book }: BookCardProps) {
         blur={0}
         borderWidth={1}
       />
-      <div className="relative z-10 rounded-lg overflow-hidden">
+      <div className="relative z-10 rounded-md overflow-hidden">
         <Link href={`/books/${book.id}`}>
           {book.cover_image ? (
             <img

@@ -5,8 +5,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { useTheme } from "next-themes";
-import { Moon, Sun, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -42,15 +41,9 @@ interface NavigationProps {
 
 export function Navigation({ brandName, brandLogo }: NavigationProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const { user, profile, signOut } = useAuth();
-  const { theme, setTheme } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleSignOut = async () => {
     await signOut();
@@ -59,7 +52,7 @@ export function Navigation({ brandName, brandLogo }: NavigationProps) {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 w-full border-b border-border/40 bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70 shadow-sm">
+    <nav className="relative w-full border-b border-border bg-background shadow-sm">
       {/* Desktop Navigation */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="hidden lg:flex flex-row items-center justify-between h-16">
@@ -112,19 +105,6 @@ export function Navigation({ brandName, brandLogo }: NavigationProps) {
 
           {/* Right Side (Auth & Theme) */}
           <div className="flex items-center gap-2">
-            {mounted && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="rounded-full hover:bg-primary/10 text-muted-foreground hover:text-primary w-9 h-9 transition-all duration-300"
-                aria-label="Toggle theme"
-              >
-                <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              </Button>
-            )}
-
             {user ? (
               <div className="flex items-center gap-2">
                 <Link
@@ -166,7 +146,7 @@ export function Navigation({ brandName, brandLogo }: NavigationProps) {
                   </Button>
                 </Link>
                 <Link href="/signup">
-                  <Button size="sm" className="rounded-full bg-gradient-to-r from-primary to-chart-5 hover:from-primary/90 hover:to-chart-5/90 shadow-lg shadow-primary/20 hover:shadow-primary/30 text-white border-0 transition-all duration-300">
+                  <Button size="sm" className="rounded-md bg-gradient-to-r from-primary to-chart-5 hover:from-primary/90 hover:to-chart-5/90 text-white border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
                     Get Started
                   </Button>
                 </Link>
@@ -194,18 +174,6 @@ export function Navigation({ brandName, brandLogo }: NavigationProps) {
               </span>
             </Link>
             <div className="flex items-center gap-2">
-              {mounted && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                  className="rounded-full hover:bg-muted text-muted-foreground hover:text-foreground w-8 h-8"
-                  aria-label="Toggle theme"
-                >
-                  <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                  <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                </Button>
-              )}
               <Button
                 variant="ghost"
                 size="icon"
@@ -225,7 +193,7 @@ export function Navigation({ brandName, brandLogo }: NavigationProps) {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="border-t border-border/40 bg-background/95 backdrop-blur-xl animate-in slide-in-from-top-2 duration-300">
+          <div className="border-t border-border bg-background animate-in slide-in-from-top-2 duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-2">
               {navItems.map((item, index) => {
                 const isActive = pathname === item.link || pathname?.startsWith(item.link + "/");
@@ -285,9 +253,9 @@ export function Navigation({ brandName, brandLogo }: NavigationProps) {
                       </Button>
                     </Link>
                     <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="w-full">
-                      <Button className="w-full bg-gradient-to-r from-primary to-chart-5 hover:from-primary/90 hover:to-chart-5/90 text-white shadow-lg shadow-primary/20 transition-all duration-300">
-                        Get Started
-                      </Button>
+                    <Button className="w-full bg-gradient-to-r from-primary to-chart-5 hover:from-primary/90 hover:to-chart-5/90 text-white border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
+                      Get Started
+                    </Button>
                     </Link>
                   </div>
                 )}

@@ -86,10 +86,7 @@ export default async function BooksPage({
       )}
 
       {/* Main Content */}
-      <div className="relative w-full py-12 bg-gradient-to-br from-background via-primary/10 to-chart-4/10 overflow-hidden">
-        {/* Decorative gradient overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,var(--primary)/0.15,transparent_60%)] pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_70%,var(--chart-4)/0.1,transparent_60%)] pointer-events-none" />
+      <div className="relative w-full py-12 bg-background overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 relative z-10">
           {!heroSection && (
             <div className="mb-8">

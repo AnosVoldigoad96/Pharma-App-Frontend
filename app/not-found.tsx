@@ -25,7 +25,7 @@ export default function NotFound() {
          - We use a CSS radial-gradient pattern here (dots).
          - The 'animate-sliding-bg' makes the dots move.
       */}
-      <div className="absolute inset-0 z-0 opacity-20">
+      <div className="absolute inset-0 z-0 opacity-10">
         <div
           className="h-full w-full animate-sliding-bg"
           style={{
@@ -38,14 +38,17 @@ export default function NotFound() {
       {/* LAYER 2: Your Custom Mascot Video */}
       <div className="relative z-10 flex flex-col items-center text-center px-4">
         {/* The Video Container */}
-        <div className="relative mb-6 h-64 w-64 md:h-96 md:w-96">
+        <div className="relative mb-6 h-64 w-64 md:h-96 md:w-96 flex items-center justify-center">
           {!videoError ? (
             <video
               autoPlay
               loop
               muted
               playsInline
-              className="h-full w-full object-cover pointer-events-none rounded-lg"
+              className="h-full w-full object-contain pointer-events-none drop-shadow-2xl"
+              style={{ 
+                backgroundColor: 'transparent',
+              }}
               onError={() => setVideoError(true)}
             >
               {/* Prioritize HEVC for Safari if you have it */}

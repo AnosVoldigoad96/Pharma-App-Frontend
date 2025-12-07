@@ -79,10 +79,7 @@ export default async function BlogsPage({
       )}
 
       {/* Main Content */}
-      <div className="relative w-full py-12 bg-gradient-to-br from-background via-primary/10 to-chart-4/10 overflow-hidden">
-        {/* Decorative gradient overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--primary)/0.12,transparent_70%)] pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,var(--chart-4)/0.1,transparent_70%)] pointer-events-none" />
+      <div className="relative w-full py-12 bg-background overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 relative z-10">
           {!heroSection && (
             <div className="mb-8 flex items-center justify-between">

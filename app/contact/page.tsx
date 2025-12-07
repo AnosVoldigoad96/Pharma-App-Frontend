@@ -72,9 +72,7 @@ export default async function ContactPage() {
       )}
 
       {/* Main Content */}
-      <div className="relative w-full py-12 md:py-16 bg-gradient-to-br from-background via-primary/5 to-background overflow-hidden">
-        {/* Decorative gradient overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,oklch(0.7686_0.1647_70.0804/0.05),transparent_70%)] pointer-events-none" />
+      <div className="relative w-full py-12 md:py-16 bg-background overflow-hidden">
         <div className="mx-auto max-w-7xl px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-10">
           {/* Contact Information */}

@@ -80,10 +80,7 @@ export default async function ToolsPage({
       )}
 
       {/* Main Content */}
-      <div className="relative w-full py-12 bg-gradient-to-br from-background via-chart-3/10 to-chart-2/10 overflow-hidden">
-        {/* Decorative gradient overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,var(--chart-3)/0.15,transparent_60%)] pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_70%,var(--chart-2)/0.12,transparent_60%)] pointer-events-none" />
+      <div className="relative w-full py-12 bg-background overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 relative z-10">
           {!heroSection && (
             <div className="mb-8">

@@ -35,9 +35,7 @@ export async function Footer() {
   ];
 
   return (
-    <footer className="relative bg-gradient-to-br from-card via-card to-muted/30 border-t border-border mt-auto overflow-hidden">
-      {/* Background gradient decoration */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,oklch(0.7686_0.1647_70.0804/0.05),transparent_70%)] pointer-events-none" />
+    <footer className="relative bg-background border-t border-border mt-auto overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Company Branding Section */}
@@ -187,7 +185,7 @@ export async function Footer() {
               >
                 Privacy Policy
               </Link>
-              <span className="text-muted-foreground">•</span>
+              <span className="text-muted-foreground/60">•</span>
               <Link
                 href="/terms"
                 className="text-muted-foreground hover:text-foreground transition-colors"

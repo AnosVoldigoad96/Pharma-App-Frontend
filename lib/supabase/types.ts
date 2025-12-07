@@ -274,6 +274,17 @@ export type AboutUsValue = {
   description: string
 }
 
+export type Feature = {
+  id: string
+  title: string
+  description: string
+  image: string | null
+  display_order: number
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
 export type AboutUs = {
   id: string
   mission_title: string | null
