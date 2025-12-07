@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Navigation } from "@/components/navigation";
-import { Footer } from "@/components/footer";
 import { AuthProvider } from "@/contexts/auth-context";
 import { getSiteSettings } from "@/lib/supabase/queries";
+import { AuthLayoutWrapper } from "@/components/auth-layout-wrapper";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,7 +22,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Fetch site settings to get theme colors
+  // Fetch site settings to get theme colors and footer data
   const { data: settings } = await getSiteSettings();
 
   return (
@@ -31,16 +31,13 @@ export default async function RootLayout({
         className={`${inter.variable} font-sans antialiased`}
       >
         <AuthProvider>
-          <div className="flex flex-col min-h-screen">
-            <Navigation
-              brandName={settings?.brand_name || "ePharmatica"}
-              brandLogo={settings?.brand_logo || null}
-            />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </div>
+          <AuthLayoutWrapper
+            brandName={settings?.brand_name || "ePharmatica"}
+            brandLogo={settings?.brand_logo || null}
+            footerData={settings}
+          >
+            {children}
+          </AuthLayoutWrapper>
         </AuthProvider>
       </body>
     </html>

@@ -1,8 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getSiteSettings } from "@/lib/supabase/queries";
 import { Mail, Phone, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, ExternalLink as ExternalLinkIcon } from "lucide-react";
 import { NewsletterForm } from "@/components/newsletter-form";
+import type { SiteSettings } from "@/lib/supabase/types";
 
 // Social media icon mapping
 const socialIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -13,9 +13,11 @@ const socialIcons: Record<string, React.ComponentType<{ className?: string }>> =
   youtube: Youtube,
 };
 
-export async function Footer() {
-  const { data: siteSettings } = await getSiteSettings();
+interface FooterProps {
+  siteSettings: SiteSettings | null;
+}
 
+export function Footer({ siteSettings }: FooterProps) {
   const brandName = siteSettings?.brand_name || "ePharmatica";
   const brandLogo = siteSettings?.brand_logo;
   const contactEmail = siteSettings?.contact_email;

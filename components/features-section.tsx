@@ -27,7 +27,7 @@ export function FeaturesSection({ features }: FeaturesSectionProps) {
         />
       </div>
     ) : (
-      <div className="flex h-full w-full items-center justify-center rounded-md bg-gradient-to-br from-primary/20 to-chart-5/20">
+      <div className="flex h-full w-full items-center justify-center rounded-md bg-primary/20">
         <p className="text-sm text-muted-foreground">No image available</p>
       </div>
     ),
@@ -35,7 +35,7 @@ export function FeaturesSection({ features }: FeaturesSectionProps) {
 
   return (
     <section className="bg-background">
-      <StickyScroll 
+      <StickyScroll
         content={content}
         headerTitle="Our Features"
         headerDescription="Discover what makes ePharmatica the leading pharmaceutical knowledge platform"

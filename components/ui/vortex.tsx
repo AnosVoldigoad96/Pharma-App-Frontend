@@ -1,3 +1,4 @@
+"use client";
 import { cn } from "@/lib/utils";
 import React, { useEffect, useRef } from "react";
 import { createNoise3D } from "simplex-noise";
@@ -19,7 +20,7 @@ interface VortexProps {
 
 export const Vortex = (props: VortexProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const animationFrameId = useRef<number | undefined>(undefined);
   const particleCount = props.particleCount || 700;
   const particlePropCount = 9;
@@ -57,8 +58,7 @@ export const Vortex = (props: VortexProps) => {
 
   const setup = () => {
     const canvas = canvasRef.current;
-    const container = containerRef.current;
-    if (canvas && container) {
+    if (canvas) {
       const ctx = canvas.getContext("2d");
 
       if (ctx) {
@@ -192,10 +192,16 @@ export const Vortex = (props: VortexProps) => {
     canvas: HTMLCanvasElement,
     ctx?: CanvasRenderingContext2D,
   ) => {
-    const { innerWidth, innerHeight } = window;
-
-    canvas.width = innerWidth;
-    canvas.height = innerHeight;
+    const container = containerRef.current;
+    if (container) {
+      const rect = container.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    } else {
+      const { innerWidth, innerHeight } = window;
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+    }
 
     center[0] = 0.5 * canvas.width;
     center[1] = 0.5 * canvas.height;
@@ -237,10 +243,15 @@ export const Vortex = (props: VortexProps) => {
   };
 
   useEffect(() => {
-    setup();
+    // Delay setup to ensure canvas is mounted
+    const timer = setTimeout(() => {
+      setup();
+    }, 100);
+
     window.addEventListener("resize", handleResize);
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener("resize", handleResize);
       if (animationFrameId.current) {
         cancelAnimationFrame(animationFrameId.current);
