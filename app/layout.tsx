@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/auth-context";
 import { getSiteSettings } from "@/lib/supabase/queries";
 import { AuthLayoutWrapper } from "@/components/auth-layout-wrapper";
+import { ThemeProvider } from "@/components/theme-provider";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const inter = Inter({
@@ -26,20 +27,28 @@ export default async function RootLayout({
   const { data: settings } = await getSiteSettings();
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${inter.variable} font-sans antialiased`}
       >
-        <AuthProvider>
-          <AuthLayoutWrapper
-            brandName={settings?.brand_name || "ePharmatica"}
-            brandLogo={settings?.brand_logo || null}
-            footerData={settings}
-          >
-            {children}
-          </AuthLayoutWrapper>
-        </AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            <AuthLayoutWrapper
+              brandName={settings?.brand_name || "ePharmatica"}
+              brandLogo={settings?.brand_logo || null}
+              footerData={settings}
+            >
+              {children}
+            </AuthLayoutWrapper>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
 }
+

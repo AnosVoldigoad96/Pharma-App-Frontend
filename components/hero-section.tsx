@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Vortex } from "@/components/ui/vortex";
+import LiquidEther from "@/components/LiquidEther";
 
 interface HeroSectionProps {
   heroHeading: string;
@@ -11,22 +11,31 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ heroHeading, heroSubtitle, heroImage }: HeroSectionProps) {
-  // Use Vortex background instead of image
+  // Use LiquidEther background instead of Vortex
   return (
     <section className="relative w-full min-h-[500px] md:min-h-[600px] overflow-hidden bg-black">
-      <Vortex
-        className="flex items-center justify-center"
-        containerClassName="absolute inset-0"
-        particleCount={700}
-        rangeY={100}
-        baseHue={260}
-        baseSpeed={0.0}
-        rangeSpeed={1.5}
-        baseRadius={1}
-        rangeRadius={2}
-        backgroundColor="#000000"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 py-20">
+      <div className="absolute inset-0 w-full h-full">
+        <LiquidEther
+          colors={['#3ECF8E', '#10B981', '#059669']}
+          mouseForce={20}
+          cursorSize={100}
+          isViscous={false}
+          viscous={30}
+          iterationsViscous={32}
+          iterationsPoisson={32}
+          resolution={0.5}
+          isBounce={false}
+          autoDemo={true}
+          autoSpeed={0.5}
+          autoIntensity={2.2}
+          takeoverDuration={0.25}
+          autoResumeDelay={3000}
+          autoRampDuration={0.6}
+        />
+      </div>
+
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 py-20 pointer-events-auto">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 max-w-4xl mx-auto leading-tight bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent drop-shadow-2xl">
             {heroHeading}
           </h1>
@@ -46,7 +55,7 @@ export function HeroSection({ heroHeading, heroSubtitle, heroImage }: HeroSectio
             </Link>
           </div>
         </div>
-      </Vortex>
+      </div>
     </section>
   );
 }

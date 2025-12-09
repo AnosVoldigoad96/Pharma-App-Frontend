@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Navbar, NavBody, NavItems, MobileNav, MobileNavHeader, MobileNavMenu, MobileNavToggle, NavbarButton } from "@/components/ui/resizable-navbar";
+import { ModeToggle } from "@/components/mode-toggle";
 
 
 const navItems = [
@@ -87,6 +88,7 @@ export function Navigation({ brandName, brandLogo }: NavigationProps) {
               Sign In
             </NavbarButton>
           )}
+          <ModeToggle />
         </div>
       </NavBody>
 

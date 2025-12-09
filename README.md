@@ -1,146 +1,287 @@
 # ePharmatica Frontend
 
-A modern Next.js frontend application for the ePharmatica pharmaceutical knowledge platform, built with TypeScript, Tailwind CSS, and Supabase.
+A modern, full-featured pharmaceutical knowledge platform built with Next.js, TypeScript, Tailwind CSS, and Supabase.
 
-## Features
+## 🌟 Features
 
-- 📚 **Books Library** - Browse and search pharmaceutical books
-- 📝 **Blog Articles** - Read the latest pharmaceutical news and insights
-- 💬 **Community Discussions** - Join threads and discussions
-- 🛠️ **Tools** - Access pharmaceutical tools and utilities
-- 📧 **Contact Form** - Submit inquiries and feedback
-- 🎨 **Modern UI** - Built with shadcn/ui components and Tailwind CSS
+- 📚 **Books Library** - Browse and search pharmaceutical books with AI-powered chat
+- 📝 **Blog System** - Publish articles with SEO optimization and author management
+- 💬 **Community Discussions** - Threaded discussions with moderation
+- 🤖 **AI Chatbot** - RAG-powered chatbot for pharmaceutical questions
+- 🛠️ **Tools & Calculators** - Pharmaceutical calculation tools and utilities
+- 👥 **User Management** - Authentication, profiles, and role-based access
+- 🎨 **Dynamic Theming** - Supabase theme with light/dark modes
+- 📧 **Contact & Requests** - Contact forms and feature request system
+- 🔒 **Admin CMS** - Complete admin dashboard for content management
 
-## Tech Stack
-
-- **Framework:** Next.js 16 (App Router)
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS v4
-- **UI Components:** shadcn/ui
-- **Database:** Supabase
-- **Icons:** Lucide React
-
-## Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
 - Node.js 18+ installed
-- A Supabase project with the database schema set up
+- A Supabase project ([create one free](https://supabase.com))
+- Gemini API key for chatbot ([get it here](https://ai.google.dev))
 
 ### Installation
 
-1. **Install dependencies:**
+1. **Clone and install:**
    ```bash
+   git clone <repository-url>
+   cd Frontend
    npm install
    ```
 
 2. **Set up environment variables:**
    
-   Create a `.env.local` file in the root directory:
+   Create `.env.local`:
    ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
+   HUGGINGFACE_API_KEY=your_huggingface_key  # For RAG embeddings
    ```
    
-   See `ENV_SETUP.md` for detailed instructions on how to get these values.
+   See **[docs/setup/ENVIRONMENT.md](docs/setup/ENVIRONMENT.md)** for detailed instructions.
 
-3. **Run the development server:**
+3. **Set up database:**
+   
+   Run migrations in order (see **[database/README.md](database/README.md)**):
+   ```sql
+   -- In Supabase SQL Editor, run each file:
+   database/migrations/001_initial_schema.sql
+   database/migrations/002_about_us_table.sql
+   database/migrations/003_blog_author.sql
+   -- ... (continue in order)
+   ```
+
+4. **Run development server:**
    ```bash
    npm run dev
    ```
 
-4. **Open your browser:**
-   Navigate to [http://localhost:3000](http://localhost:3000)
+5. **Open [http://localhost:3000](http://localhost:3000)**
 
-## Project Structure
+## 📖 Documentation
+
+### Setup Guides
+- **[Installation Guide](docs/setup/ENVIRONMENT.md)** - Environment setup and configuration
+- **[Database Setup](database/README.md)** - Complete database migration guide
+- **[Database Schema](docs/database/SCHEMA.md)** - Full schema reference
+
+### Feature Documentation
+- **[Authentication System](docs/features/AUTHENTICATION.md)** - User auth and profiles
+- **[AI Chatbot & RAG](docs/features/CHATBOT.md)** - Chatbot configuration and RAG setup
+- **[Tools System](docs/features/TOOLS.md)** - Creating pharmaceutical calculators
+- **[Theming Guide](docs/features/THEMING.md)** - Theme customization and styling
+
+### Additional Resources
+- **[Supabase Theme Implementation](SUPABASE_THEME_IMPLEMENTATION.md)** - Theme setup details
+- **[Color Reference](THEME_COLOR_REFERENCE.md)** - Complete color palette
+
+## 🏗️ Tech Stack
+
+- **Framework:** Next.js 16 (App Router)  
+- **Language:** TypeScript  
+- **Styling:** Tailwind CSS v4  
+- **UI Components:** shadcn/ui  
+- **Database:** Supabase (PostgreSQL)  
+- **Authentication:** Supabase Auth  
+- **AI:** Google Gemini API  
+- **Vector Search:** pgvector (for RAG)  
+-  **Deployment:** Vercel  
+- **Icons:** Lucide React  
+
+## 📁 Project Structure
 
 ```
 Frontend/
 ├── app/                    # Next.js app directory
-│   ├── page.tsx           # Home page
-│   ├── layout.tsx         # Root layout
-│   ├── books/             # Books pages
+│   ├── (auth)/            # Auth pages (login, signup)
+│   ├── admin/             # Admin CMS pages
+│   ├── api/               # API routes
 │   ├── blogs/             # Blog pages
-│   ├── threads/           # Discussion threads
-│   └── contact/           # Contact page
+│   ├── books/             # Book library pages
+│   ├── threads/           # Discussion forum
+│   ├── tools/             # Pharmaceutical tools
+│   ├── layout.tsx         # Root layout
+│   ├── page.tsx           # Homepage
+│   └── globals.css        # Global styles & theme
 ├── components/            # React components
-│   └── navigation.tsx     # Main navigation
+│   ├── ui/               # shadcn/ui components
+│   ├── navigation.tsx    # Main navigation
+│   ├── footer.tsx        # Footer component
+│   └── ...               # Other components
 ├── lib/                   # Utility functions
-│   ├── supabase/         # Supabase configuration
-│   │   ├── client.ts     # Supabase client
-│   │   ├── types.ts      # TypeScript types
-│   │   └── queries.ts    # Data fetching functions
+│   ├── supabase/         # Supabase clients & queries
+│   ├── theme-utils.ts    # Theme utilities
 │   └── utils.ts          # General utilities
-└── public/               # Static assets
+├── database/              # SQL files
+│   ├── migrations/       # Database migrations
+│   ├── functions/        # Database functions
+│   └── test-data/        # Sample data
+├── docs/                  # Documentation
+│   ├── setup/            # Setup guides
+│   ├── features/         # Feature documentation
+│   └── database/         # Database docs
+├── public/                # Static assets
+└── types/                 # TypeScript type definitions
 ```
 
-## Database Schema
+## 📊 Database
 
-The application uses the following main tables from Supabase:
+### Core Tables
 
+- `site_settings` - Global configuration
+- `public_users` - User profiles and roles
+- `books` / `book_categories` - Book library
+- `book_knowledge` - RAG knowledge base
 - `blogs` - Blog articles
-- `books` - Book library
-- `book_categories` - Book categories
-- `threads` - Discussion threads
-- `comments` - Thread comments
-- `tools` - Tools and utilities
-- `faqs` - Frequently asked questions
-- `team_members` - Team member profiles
-- `contact_submissions` - Contact form submissions
-- `site_settings` - Site configuration
-- And more...
+- `threads` / `comments` - Community discussions
+- `tools` - Pharmaceutical calculators
+- `chatbots` / `chat_history` - AI chatbot
+- `contact_submissions` / `requests` - User communications
+- `team_members` / `faqs` / `features` - CMS content
 
-See `Supabase_Database.md` for the complete database schema.
+See **[docs/database/SCHEMA.md](docs/database/SCHEMA.md)** for complete schema documentation.
 
-## Available Scripts
+## 🎨 Theming
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
+The project uses the **Supabase theme** with OKLCH color space for perceptually uniform colors:
 
-## Adding shadcn/ui Components
+```tsx
+// Use theme-aware utilities
+<button className="bg-primary text-primary-foreground hover:bg-primary/90">
+  Click me
+</button>
 
-To add new shadcn/ui components:
+<div className="bg-card text-card-foreground border border-border rounded-lg">
+  Card content
+</div>
+```
+
+**Dark mode** is automatically supported. Add ThemeProvider to toggle:
+
+```tsx
+import { ThemeProvider } from '@/components/theme-provider'
+
+<ThemeProvider attribute="class" defaultTheme="system">
+  {children}
+</ThemeProvider>
+```
+
+See **[docs/features/THEMING.md](docs/features/THEMING.md)** for customization guide.
+
+## 🔧 Available Scripts
 
 ```bash
-npx shadcn@latest add [component-name]
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run start    # Start production server
+npm run lint     # Run ESLint
 ```
 
-For example:
+## 🤖 AI Chatbot Setup
+
+1. **Enable pgvector extension** in Supabase
+2. **Run database function:**
+   ```sql
+   \i database/functions/match_book_content.sql
+   ```
+3. **Add API keys** to `.env.local`
+4. **Configure chatbots** in admin panel or database
+
+See **[docs/features/CHATBOT.md](docs/features/CHATBOT.md)** for detailed setup.
+
+## 🛠️ Adding shadcn/ui Components
+
 ```bash
 npx shadcn@latest add button
 npx shadcn@latest add card
 npx shadcn@latest add dialog
 ```
 
-## Data Fetching
+Components are added to `components/ui/` and automatically use your theme.
 
-All data fetching functions are located in `lib/supabase/queries.ts`. These functions use the Supabase client to fetch data from your database.
+## 📝 Creating Content
 
-Example usage:
-```typescript
-import { getBooks, getBlogs } from '@/lib/supabase/queries'
+### Admin Access
 
-// In a Server Component
-const { data: books, error } = await getBooks(10, undefined, true)
+Navigate to `/admin` (requires admin role).
+
+### Adding Books
+
+1. Go to **Admin → Books**
+2. Click **Add Book**
+3. Fill in details, upload cover
+4. Enable AI chat if RAG is set up
+
+### Creating Blog Posts
+
+1. Go to **Admin → Blogs**
+2. Click **Create Post**
+3. Write content (supports Markdown/HTML)
+4. Set SEO metadata
+5. Publish when ready
+
+### Pharmaceutical Tools
+
+1. Go to **Admin → Tools**
+2. Click **Create Tool**
+3. Define inputs (JSON schema)
+4. Set API endpoint for calculations
+
+## 🔐 Security
+
+- **Row Level Security (RLS)** enabled on all tables
+- **Role-based access control** (user, moderator, admin)
+- **Content moderation** for threads and comments
+- **Secure API routes** with authentication checks
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+
+1. Push code to GitHub
+2. Import project in Vercel
+3. Add environment variables
+4. Deploy
+
+### Environment Variables for Production
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_GEMINI_API_KEY=
+HUGGINGFACE_API_KEY=
 ```
 
-## TypeScript Types
+## 📄 License
 
-All database types are defined in `lib/supabase/types.ts`. Import them as needed:
+Private project - All rights reserved
 
-```typescript
-import type { Book, Blog, Thread } from '@/lib/supabase/types'
-```
-
-## Contributing
+## 🤝 Contributing
 
 1. Create a feature branch
 2. Make your changes
-3. Test thoroughly
+3. Test thoroughly (light/dark modes, mobile/desktop)
 4. Submit a pull request
 
-## License
+## 📞 Support
 
-Private project - All rights reserved
+For issues or questions:
+- Check documentation in `/docs`
+- Review database schema
+- Check feature flags in `lib/theme-config.ts` and `lib/chat-config.ts`
+
+## 🎓 Learning Resources
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Supabase Docs](https://supabase.com/docs)
+- [Tailwind CSS](https://tailwindcss.com)
+- [shadcn/ui](https://ui.shadcn.com)
+- [TypeScript](https://www.typescriptlang.org/docs)
+- [Google Gemini API](https://ai.google.dev/docs)
+
+---
+
+**Built with ❤️ for the pharmaceutical community**
