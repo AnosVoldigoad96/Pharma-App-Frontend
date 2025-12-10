@@ -74,7 +74,7 @@ export function ThreadsCarousel({ threads }: ThreadsCarouselProps) {
                                                     </div>
                                                     <div>
                                                         <span className="text-xs font-semibold text-primary uppercase tracking-wider">Discussion</span>
-                                                        {thread.is_trending && (
+                                                        {thread.view_count > 100 && (
                                                             <div className="flex items-center gap-1 mt-0.5">
                                                                 <TrendingUp className="w-3 h-3 text-orange-500" />
                                                                 <span className="text-[10px] font-medium text-orange-500">Trending</span>
@@ -93,13 +93,13 @@ export function ThreadsCarousel({ threads }: ThreadsCarouselProps) {
                                         <CardContent className="space-y-4">
                                             {/* Description */}
                                             <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed min-h-[42px]">
-                                                {thread.description || thread.content}
+                                                {thread.content}
                                             </p>
 
                                             {/* Footer with Author and Stats */}
                                             <div className="flex items-center justify-between pt-3 border-t border-border/50">
                                                 <span className="text-xs text-muted-foreground font-medium">
-                                                    by {thread.user_name || thread.author_name || 'Anonymous'}
+                                                    by {thread.author_name || 'Anonymous'}
                                                 </span>
                                                 <div className="flex items-center gap-4">
                                                     <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-muted/50 backdrop-blur-sm">
