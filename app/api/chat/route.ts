@@ -17,7 +17,7 @@ const getGoogleAI = () => {
   return new GoogleGenerativeAI(apiKey);
 };
 
-// Google AI Studio (Gemini) API
+// Google AI Studio (Gemini/Gemma) API
 async function callGoogleAI(
   modelName: string,
   messages: Array<{ role: string; content: string }>,
@@ -35,17 +35,33 @@ async function callGoogleAI(
       parts: [{ text: msg.content }],
     }));
 
-  // Add system instruction
-  const systemInstruction = systemPrompt;
+  // Gemma models don't support systemInstruction parameter
+  // System prompt must be integrated into the first user message ONLY ONCE
+  const isGemmaModel = modelName.toLowerCase().includes("gemma");
 
   try {
-    const result = await model.generateContent({
-      contents,
-      systemInstruction,
-    });
+    if (isGemmaModel) {
+      // For Gemma: prepend system prompt ONLY to the very first message (no history)
+      // If there's conversation history, the system prompt was already included
+      const hasHistory = messages.length > 1;
 
-    const response = await result.response;
-    return response.text();
+      if (!hasHistory && contents.length > 0 && contents[0].role === "user") {
+        // First message ever - include system prompt
+        contents[0].parts[0].text = `${systemPrompt}\n\nUser: ${contents[0].parts[0].text}`;
+      }
+
+      const result = await model.generateContent({ contents });
+      const response = await result.response;
+      return response.text();
+    } else {
+      // For Gemini: use systemInstruction parameter
+      const result = await model.generateContent({
+        contents,
+        systemInstruction: systemPrompt,
+      });
+      const response = await result.response;
+      return response.text();
+    }
   } catch (error) {
     console.error("Google AI API error:", error);
     throw new Error(`Google AI API error: ${error instanceof Error ? error.message : "Unknown error"}`);
@@ -96,7 +112,7 @@ async function callGroq(
 async function getEmbedding(text: string): Promise<number[]> {
   const genAI = getGoogleAI();
   const embeddingModel = genAI.getGenerativeModel({ model: "text-embedding-004" });
-  
+
   try {
     const embeddingResult = await embeddingModel.embedContent(text);
     return embeddingResult.embedding.values;
@@ -116,7 +132,7 @@ async function retrieveRelevantKnowledge(
     // This matches the CMS implementation using match_book_content
     console.log(`   → Calling match_book_content RPC function...`);
     console.log(`   → Parameters: book_id=${bookId}, threshold=0.4, count=4`);
-    
+
     const { data, error } = await supabase.rpc("match_book_content", {
       query_embedding: queryEmbedding,
       target_book_id: bookId,
@@ -127,7 +143,7 @@ async function retrieveRelevantKnowledge(
     if (error) {
       console.error(`   ✗ RPC error: ${error.message}`);
       console.log("   → Falling back to simple book_id query...");
-      
+
       // Fallback: Get knowledge by book_id without vector search
       const { data: fallbackData, error: fallbackError } = await supabase
         .from("book_knowledge")
@@ -158,7 +174,7 @@ async function retrieveRelevantKnowledge(
   } catch (rpcError) {
     console.error(`   ✗ Exception during vector search: ${rpcError}`);
     console.log("   → Falling back to simple book_id query...");
-    
+
     // Fallback: Get knowledge by book_id without vector search
     const { data: fallbackData } = await supabase
       .from("book_knowledge")
@@ -234,7 +250,7 @@ export async function POST(request: NextRequest) {
         console.log("1. Generating embedding for user query...");
         const queryEmbedding = await getEmbedding(lastUserMessage);
         console.log(`   ✓ Embedding generated (dimensions: ${queryEmbedding.length})`);
-        
+
         // Retrieve relevant knowledge using RAG
         console.log("2. Searching for relevant knowledge chunks...");
         relevantKnowledge = await retrieveRelevantKnowledge(

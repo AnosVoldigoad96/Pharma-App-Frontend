@@ -73,13 +73,13 @@ export function BookCard({ book }: BookCardProps) {
   const handleRequest = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
+    
     // If user is not logged in, show sign-in dialog
     if (!user) {
       setShowSignInDialog(true);
       return;
     }
-
+    
     if (isRequesting || requestSuccess) return;
 
     setIsRequesting(true);
@@ -113,7 +113,7 @@ export function BookCard({ book }: BookCardProps) {
 
 
   return (
-    <div className="group relative block rounded-lg transition-all duration-500 bg-background/40 backdrop-blur-xl border border-border/50 hover:bg-background/60 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2">
+    <div className="group relative block rounded-md transition-all bg-card border-2 border-border hover:border-primary/50">
       <GlowingEffect
         disabled={false}
         spread={30}
@@ -123,19 +123,16 @@ export function BookCard({ book }: BookCardProps) {
         blur={0}
         borderWidth={1}
       />
-      <div className="relative z-10 rounded-lg overflow-hidden">
+      <div className="relative z-10 rounded-md overflow-hidden">
         <Link href={`/books/${book.id}`}>
           {book.cover_image ? (
-            <div className="relative w-full h-64 overflow-hidden">
-              <img
-                src={book.cover_image}
-                alt={book.title}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            </div>
+            <img
+              src={book.cover_image}
+              alt={book.title}
+              className="w-full h-64 object-cover"
+            />
           ) : (
-            <div className="w-full h-64 bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 backdrop-blur-sm flex items-center justify-center">
+            <div className="w-full h-64 bg-muted flex items-center justify-center">
               <span className="text-muted-foreground">No Cover</span>
             </div>
           )}
@@ -157,11 +154,11 @@ export function BookCard({ book }: BookCardProps) {
             </p>
           )}
           {book.tags && book.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-2 mb-3">
+            <div className="flex flex-wrap gap-1 mt-2 mb-3">
               {book.tags.slice(0, 2).map((tag, idx) => (
                 <span
                   key={idx}
-                  className="text-xs bg-primary/15 backdrop-blur-sm px-2 py-1 rounded-full border border-primary/30 text-primary font-medium"
+                  className="text-xs bg-muted px-2 py-0.5 rounded"
                 >
                   {tag}
                 </span>
@@ -172,7 +169,7 @@ export function BookCard({ book }: BookCardProps) {
             <div className="mb-3">
               <Link
                 href={`/books/${book.id}/chat`}
-                className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-primary/15 backdrop-blur-sm text-primary rounded-full border border-primary/30 hover:bg-primary/25 transition-colors"
+                className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-primary/10 text-primary rounded-md hover:bg-primary/20 transition-colors"
               >
                 Chat with {chatbot.name}
               </Link>
@@ -196,7 +193,7 @@ export function BookCard({ book }: BookCardProps) {
                   onClick={handleDownload}
                   variant={book.purchase_link ? "outline" : "default"}
                   size="sm"
-                  className={book.purchase_link ? "flex-1 min-w-[80px] backdrop-blur-sm" : "w-full"}
+                  className={book.purchase_link ? "flex-1 min-w-[80px]" : "w-full"}
                   disabled={isDownloading}
                 >
                   {isDownloading ? "Downloading..." : "Download"}
@@ -208,14 +205,14 @@ export function BookCard({ book }: BookCardProps) {
                 onClick={handleRequest}
                 variant={book.purchase_link ? "outline" : "default"}
                 size="sm"
-                className={book.purchase_link ? "flex-1 min-w-[80px] backdrop-blur-sm" : "w-full"}
+                className={book.purchase_link ? "flex-1 min-w-[80px]" : "w-full"}
                 disabled={isRequesting || requestSuccess}
               >
                 {isRequesting
                   ? "Requesting..."
                   : requestSuccess
-                    ? "Requested!"
-                    : "Request"}
+                  ? "Requested!"
+                  : "Request"}
               </Button>
             )}
           </div>
