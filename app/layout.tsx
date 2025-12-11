@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "./hero-animations.css";
 import { AuthProvider } from "@/contexts/auth-context";
 import { getSiteSettings } from "@/lib/supabase/queries";
 import { AuthLayoutWrapper } from "@/components/auth-layout-wrapper";

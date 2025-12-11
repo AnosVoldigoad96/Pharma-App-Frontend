@@ -72,9 +72,9 @@ export const Navbar = ({ children, className }: NavbarProps) => {
       {React.Children.map(children, (child) =>
         React.isValidElement(child)
           ? React.cloneElement(
-              child as React.ReactElement<{ visible?: boolean }>,
-              { visible },
-            )
+            child as React.ReactElement<{ visible?: boolean }>,
+            { visible },
+          )
           : child,
       )}
     </motion.div>
@@ -85,13 +85,14 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
   return (
     <motion.div
       animate={{
-        backdropFilter: visible ? "blur(10px)" : "none",
+        backdropFilter: visible ? "blur(10px)" : "blur(8px)",
         boxShadow: visible
           ? "0 0 24px rgba(0, 0, 0, 0.3), 0 1px 1px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1)"
-          : "none",
+          : "0 4px 6px rgba(0, 0, 0, 0.1)",
         width: visible ? "40vw" : "100%",
         y: 0,
         marginTop: visible ? "12px" : "0px",
+        borderRadius: visible ? "9999px" : "0px",
       }}
       transition={{
         type: "spring",
@@ -99,8 +100,8 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
         damping: 50,
       }}
       className={cn(
-        "relative z-[60] mx-auto hidden flex-row items-center justify-between self-start rounded-full bg-transparent px-4 py-2 lg:flex",
-        !visible && "max-w-7xl",
+        "relative z-[60] mx-auto hidden flex-row items-center justify-between self-start px-4 py-2 lg:flex",
+        !visible && "w-full bg-white/10 dark:bg-black/10 backdrop-blur-md border-b border-white/20",
         visible && "bg-background/95 backdrop-blur-sm border border-border",
         className,
       )}
@@ -149,14 +150,14 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
   return (
     <motion.div
       animate={{
-        backdropFilter: visible ? "blur(10px)" : "none",
+        backdropFilter: visible ? "blur(10px)" : "blur(8px)",
         boxShadow: visible
           ? "0 0 24px rgba(0, 0, 0, 0.3), 0 1px 1px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1)"
-          : "none",
+          : "0 4px 6px rgba(0, 0, 0, 0.1)",
         width: visible ? "90%" : "100%",
         paddingRight: visible ? "12px" : "0px",
         paddingLeft: visible ? "12px" : "0px",
-        borderRadius: visible ? "4px" : "2rem",
+        borderRadius: visible ? "4px" : "0px",
         y: 0,
         marginTop: visible ? "12px" : "0px",
       }}
@@ -166,7 +167,8 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
         damping: 50,
       }}
       className={cn(
-        "relative z-50 mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between bg-transparent px-0 py-2 lg:hidden",
+        "relative z-50 mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between px-0 py-2 lg:hidden",
+        !visible && "bg-white/10 dark:bg-black/10 backdrop-blur-md border-b border-white/20",
         visible && "bg-background/95 backdrop-blur-sm border border-border",
         className,
       )}
@@ -262,9 +264,9 @@ export const NavbarButton = ({
   className?: string;
   variant?: "primary" | "secondary" | "dark" | "gradient";
 } & (
-  | React.ComponentPropsWithoutRef<"a">
-  | React.ComponentPropsWithoutRef<"button">
-)) => {
+    | React.ComponentPropsWithoutRef<"a">
+    | React.ComponentPropsWithoutRef<"button">
+  )) => {
   const baseStyles =
     "px-4 py-2 rounded-md text-sm font-bold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center";
 
@@ -277,7 +279,7 @@ export const NavbarButton = ({
       "bg-gradient-to-r from-primary to-chart-5 text-primary-foreground border-2 border-primary/30 hover:border-primary/50",
   };
 
-  const Component = Tag as React.ElementType<{ href?: string; className?: string; children?: React.ReactNode; [key: string]: any }>;
+  const Component = Tag as React.ElementType<{ href?: string; className?: string; children?: React.ReactNode;[key: string]: any }>;
 
   return (
     <Component

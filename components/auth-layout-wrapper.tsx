@@ -23,7 +23,7 @@ export function AuthLayoutWrapper({ children, brandName, brandLogo, footerData }
   return (
     <div className="flex flex-col min-h-screen">
       <Navigation brandName={brandName} brandLogo={brandLogo} />
-      <main className="flex-1 pt-16">{children}</main>
+      <main className="flex-1">{children}</main>
       <Footer siteSettings={footerData} />
     </div>
   );

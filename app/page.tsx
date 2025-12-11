@@ -34,11 +34,7 @@ export default async function Home() {
   const heroImage = heroSection?.image || heroSection?.background_image || null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-chart-5/10 to-chart-3/10 relative overflow-hidden">
-      {/* Decorative gradient overlays */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--primary)/0.12,transparent_70%)] pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,var(--chart-5)/0.1,transparent_70%)] pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,var(--chart-3)/0.08,transparent_70%)] pointer-events-none" />
+    <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Hero Section */}
       <HeroSection
         heroHeading={heroHeading}
