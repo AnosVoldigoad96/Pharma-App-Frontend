@@ -65,54 +65,54 @@ export function BooksCarousel({ books }: BooksCarouselProps) {
               >
                 <Link href={`/books/${book.id}`} className="group block h-full">
                   <Card className="h-full transition-all duration-500 border border-border/50 bg-background/40 backdrop-blur-xl hover:bg-background/60 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2 overflow-hidden">
-                    {/* Book Cover */}
+                    {/* Book Cover & Info Overlay */}
                     <div className="aspect-[3/4] relative overflow-hidden">
                       {book.cover_image ? (
                         <img
                           src={book.cover_image}
                           alt={book.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                          className="w-full h-full object-cover group-hover:scale-110 group-hover:rotate-1 transition-transform duration-700 ease-out"
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 backdrop-blur-sm flex items-center justify-center">
                           <BookOpen className="w-12 h-12 text-primary/40" />
                         </div>
                       )}
-                      {/* Hover Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-4 backdrop-blur-sm">
-                        <span className="text-white text-sm font-medium px-4 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                          View Details
-                        </span>
+
+                      {/* Gradient Overlay for Text Readability */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-100 transition-opacity duration-500 flex flex-col justify-end p-4">
+                        <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-out">
+                          {/* Tags - Staggered Reveal 1 */}
+                          {book.tags && (
+                            <div className="flex flex-wrap gap-1.5 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100 translate-y-2 group-hover:translate-y-0">
+                              {book.tags.slice(0, 2).map((tag: string) => (
+                                <span
+                                  key={tag}
+                                  className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-white font-medium border border-white/30 hover:bg-primary hover:border-primary hover:scale-105 transition-all duration-300 cursor-default"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Title - Staggered Reveal 2 */}
+                          <h3 className="text-white font-bold leading-tight line-clamp-2 mb-1 text-base group-hover:!text-primary transition-colors duration-300">
+                            {book.title}
+                          </h3>
+
+                          {/* Author - Staggered Reveal 3 */}
+                          {book.author && (
+                            <p className="text-white/80 text-xs line-clamp-1 opacity-80 group-hover:opacity-100 transition-opacity duration-300 delay-75">
+                              By {book.author}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      {/* Gradient Shine Effect */}
+
+                      {/* Hover Shine Effect */}
                       <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
                     </div>
-
-                    {/* Book Info */}
-                    <CardHeader className="p-4 space-y-1.5">
-                      <CardTitle className="text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors min-h-[40px]">
-                        {book.title}
-                      </CardTitle>
-                      {book.author && (
-                        <CardDescription className="text-xs line-clamp-1 flex items-center gap-1">
-                          <span className="text-muted-foreground/60">By</span> {book.author}
-                        </CardDescription>
-                      )}
-                    </CardHeader>
-                    <CardContent className="p-4 pt-0">
-                      {book.tags && (
-                        <div className="flex flex-wrap gap-1.5">
-                          {book.tags.slice(0, 2).map((tag: string) => (
-                            <span
-                              key={tag}
-                              className="text-[10px] px-2 py-1 rounded-full bg-primary/15 backdrop-blur-sm text-primary font-medium border border-primary/30"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </CardContent>
                   </Card>
                 </Link>
               </div>

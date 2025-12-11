@@ -3,18 +3,19 @@ import { getBlogs, getBooks, getThreads, getSiteSettings, getPageContent, getFea
 import { Button } from "@/components/ui/button";
 import { FeaturesSection } from "@/components/features-section";
 import { BooksCarousel } from "@/components/books-carousel";
-import { ArticlesCarousel } from "@/components/articles-carousel";
-import { ThreadsCarousel } from "@/components/threads-carousel";
+import { CommunityHubSection } from "@/components/community-hub-section";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { ArrowRight, BookOpen, FileText, MessageSquare, Clock, TrendingUp, Eye, ThumbsUp } from "lucide-react";
 import { HeroSection } from "@/components/hero-section";
+import { AiChatSection } from "@/components/ai-chat-section";
+import { Ribbon } from "@/components/ui/ribbon";
 
 export default async function Home() {
   // Fetch data from Supabase
   const [blogsResult, booksResult, threadsResult, settingsResult, pageContentResult, featuresResult] = await Promise.all([
     getBlogs(3, true),
     getBooks(5, undefined, true),
-    getThreads(3, true),
+    getThreads(7, true),
     getSiteSettings(),
     getPageContent("home"),
     getFeatures(),
@@ -80,78 +81,17 @@ export default async function Home() {
         </section >
       )}
 
-      {/* Latest Articles Section */}
-      {featuredBlogs.length > 0 && (
-        <section className="py-10 md:py-14 relative">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            {/* Enhanced Header */}
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12 gap-4">
-              <div className="space-y-3">
-                <div className="inline-block">
-                  <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent mb-2">
-                    Latest Articles
-                  </h2>
-                  <div className="h-1 w-24 bg-gradient-to-r from-primary to-primary/50 rounded-full"></div>
-                </div>
-                <p className="text-lg text-muted-foreground max-w-xl">
-                  Insights and updates from the pharmaceutical world
-                </p>
-              </div>
-              <Link href="/blogs" className="hidden md:block">
-                <Button
-                  variant="ghost"
-                  size="lg"
-                  className="group text-base backdrop-blur-sm bg-background/50 border border-border/50 hover:bg-background/80 hover:border-primary/50 transition-all"
-                >
-                  View All
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-            </div>
+      {/* AI Chat Section */}
+      <AiChatSection />
 
-            {/* Articles Carousel */}
-            <ArticlesCarousel articles={featuredBlogs} />
-          </div>
-        </section>
-      )}
-
-      {/* Community Discussions Section */}
-      {featuredThreads.length > 0 && (
-        <section className="py-10 md:py-14 relative">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            {/* Enhanced Header */}
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12 gap-4">
-              <div className="space-y-3">
-                <div className="inline-block">
-                  <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent mb-2">
-                    Community Discussions
-                  </h2>
-                  <div className="h-1 w-24 bg-gradient-to-r from-primary to-primary/50 rounded-full"></div>
-                </div>
-                <p className="text-lg text-muted-foreground max-w-xl">
-                  Join thousands of professionals in meaningful conversations
-                </p>
-              </div>
-              <Link href="/threads" className="hidden md:block">
-                <Button
-                  variant="ghost"
-                  size="lg"
-                  className="group text-base backdrop-blur-sm bg-background/50 border border-border/50 hover:bg-background/80 hover:border-primary/50 transition-all"
-                >
-                  View All
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-            </div>
-
-            {/* Threads Carousel */}
-            <ThreadsCarousel threads={featuredThreads} />
-          </div>
-        </section>
+      {/* Community Hub Section (Combined Forums & Blogs) */}
+      {(featuredThreads.length > 0 || featuredBlogs.length > 0) && (
+        <CommunityHubSection threads={featuredThreads} blogs={featuredBlogs} />
       )}
 
       {/* Enhanced CTA Section with Glassmorphism */}
       <section className="py-28 md:py-36 bg-primary text-primary-foreground relative overflow-hidden">
+        <Ribbon text="Join Now" />
         {/* Animated background pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{

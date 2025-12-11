@@ -115,13 +115,23 @@ export function HeroSection({ heroHeading, heroSubtitle, heroImage }: HeroSectio
 
           {/* Left Column */}
           <div className="flex flex-col justify-center items-center lg:items-start text-center lg:text-left">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 max-w-3xl leading-tight bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent drop-shadow-2xl">
-              {heroHeading}
+            {/* Main Heading with gradient effect */}
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 max-w-3xl leading-tight animate-fade-in-up">
+              <span className="text-white">
+                {heroHeading.split(' ').slice(0, 2).join(' ')}
+              </span>
+              <br />
+              <span className="relative inline-block mt-2">
+                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 bg-[length:200%_auto]">
+                  {heroHeading.split(' ').slice(2).join(' ')}
+                </span>
+                <span className="absolute bottom-1 left-0 w-full h-3 bg-emerald-400/30 -rotate-1 rounded-full -z-0 blur-sm"></span>
+              </span>
             </h1>
-            <p className="text-xl md:text-2xl text-white/95 max-w-2xl mb-10 leading-relaxed drop-shadow-lg">
+            <p className="text-xl md:text-2xl text-white/95 max-w-2xl mb-10 leading-relaxed drop-shadow-lg animate-fade-in-up animation-delay-100">
               {heroSubtitle}
             </p>
-            <div className="flex flex-row items-center lg:items-start gap-4">
+            <div className="flex flex-row items-center lg:items-start gap-4 animate-fade-in-up animation-delay-200">
               <Link href="/signup">
                 <Button size="lg" className="text-lg px-8 h-14 rounded-md bg-white text-primary hover:bg-white/90 border-2 border-white/30">
                   Get Started
@@ -136,7 +146,7 @@ export function HeroSection({ heroHeading, heroSubtitle, heroImage }: HeroSectio
           </div>
 
           {/* Right Column - Mascot */}
-          <div className="hidden lg:flex flex-col justify-center items-center">
+          <div className="hidden lg:flex flex-col justify-center items-center animate-fade-in-scale animation-delay-300">
             <div className="relative w-[600px] h-[600px] flex items-center justify-center">
 
               {/* Enhanced Multi-Ring Rotating System */}
