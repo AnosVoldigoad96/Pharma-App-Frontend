@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react";
 import Lanyard from "@/components/Lanyard";
+import { AuthHeroBackground } from "@/components/auth-hero-background";
 
 interface LoginFormProps {
   settings: {
@@ -56,8 +57,9 @@ export function LoginForm({ settings }: LoginFormProps) {
   return (
     <div className="min-h-screen flex">
       {/* Left Column - 2/3 width */}
-      <div className="hidden lg:flex lg:w-2/3 bg-gradient-to-br from-primary/50 via-chart-5/40 to-chart-4/40 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/20" />
+      <div className="hidden lg:flex lg:w-2/3 relative overflow-hidden">
+        <AuthHeroBackground />
+
         {/* Brand logo and name in upper left corner */}
         <div className="absolute top-8 left-8 z-20 flex items-center gap-3">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
@@ -88,6 +90,23 @@ export function LoginForm({ settings }: LoginFormProps) {
       {/* Right Column - 1/3 width */}
       <div className="w-full lg:w-1/3 flex items-center justify-center p-8 bg-background dark:bg-black">
         <div className="shadow-input mx-auto w-full max-w-md rounded-none bg-white p-4 md:rounded-2xl md:p-8 dark:bg-black">
+          {/* Mobile Logo */}
+          <div className="lg:hidden flex justify-center mb-6">
+            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              {settings.brandLogo && (
+                <Image
+                  src={settings.brandLogo}
+                  alt={settings.brandName}
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                  unoptimized
+                />
+              )}
+              <span className="text-xl font-bold text-foreground">{settings.brandName}</span>
+            </Link>
+          </div>
+
           <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200">
             Welcome to {settings.brandName}
           </h2>

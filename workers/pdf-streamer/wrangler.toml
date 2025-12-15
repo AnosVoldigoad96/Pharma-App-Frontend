@@ -1,0 +1,15 @@
+name = "pdf-streamer"
+main = "src/index.ts"
+compatibility_date = "2023-10-30"
+
+# Bind the R2 Bucket
+# You must create this bucket in your Cloudflare dashboard first!
+[[r2_buckets]]
+binding = "PDF_BUCKET"
+bucket_name = "epharmatica-books" # Replace with your actual bucket name if different
+preview_bucket_name = "epharmatica-books-preview"
+
+[cors]
+origins = ["*"]
+methods = ["GET", "HEAD", "OPTIONS"]
+max_age = 86400

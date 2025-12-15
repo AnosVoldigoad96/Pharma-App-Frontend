@@ -7,6 +7,7 @@ import { getSiteSettings } from "@/lib/supabase/queries";
 import { AuthLayoutWrapper } from "@/components/auth-layout-wrapper";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { AudioChatWidget } from "@/components/audio-chat-widget";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,6 +30,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="referrer" content="no-referrer-when-downgrade" />
+      </head>
       <body
         className={`${inter.variable} font-sans antialiased`}
         suppressHydrationWarning
@@ -47,6 +51,7 @@ export default async function RootLayout({
             >
               {children}
             </AuthLayoutWrapper>
+            <AudioChatWidget />
           </AuthProvider>
         </ThemeProvider>
       </body>

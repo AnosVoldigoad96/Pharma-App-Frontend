@@ -109,7 +109,15 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
         minWidth: visible ? "800px" : undefined,
       }}
     >
-      {children}
+
+      {React.Children.map(children, (child) =>
+        React.isValidElement(child)
+          ? React.cloneElement(
+            child as React.ReactElement<{ visible?: boolean }>,
+            { visible }
+          )
+          : child
+      )}
     </motion.div>
   );
 };
@@ -155,8 +163,6 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
           ? "0 0 24px rgba(0, 0, 0, 0.3), 0 1px 1px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1)"
           : "0 4px 6px rgba(0, 0, 0, 0.1)",
         width: visible ? "90%" : "100%",
-        paddingRight: visible ? "12px" : "0px",
-        paddingLeft: visible ? "12px" : "0px",
         borderRadius: visible ? "4px" : "0px",
         y: 0,
         marginTop: visible ? "12px" : "0px",
@@ -167,9 +173,9 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
         damping: 50,
       }}
       className={cn(
-        "relative z-50 mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between px-0 py-2 lg:hidden",
+        "relative z-50 mx-auto flex w-full max-w-full flex-col items-center justify-between px-4 py-2 lg:hidden",
         !visible && "bg-white/10 dark:bg-black/10 backdrop-blur-md border-b border-white/20",
-        visible && "bg-background/95 backdrop-blur-sm border border-border",
+        visible && "bg-background/95 backdrop-blur-sm border border-border max-w-[calc(100vw-2rem)]",
         className,
       )}
     >

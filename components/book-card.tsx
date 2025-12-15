@@ -1,119 +1,21 @@
 "use client";
+"use client";
 
 import Link from "next/link";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import type { Book, Chatbot } from "@/lib/supabase/types";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/auth-client";
-import { useAuth } from "@/contexts/auth-context";
+import { Sparkles } from "lucide-react";
+import Image from "next/image";
 
 interface BookCardProps {
   book: Book;
 }
 
 export function BookCard({ book }: BookCardProps) {
-  const { user } = useAuth();
-  const [isRequesting, setIsRequesting] = useState(false);
-  const [requestSuccess, setRequestSuccess] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [showSignInDialog, setShowSignInDialog] = useState(false);
-  const [chatbot, setChatbot] = useState<Chatbot | null>(null);
-
-  // Fetch chatbot when ai_chat_enabled is true
-  useEffect(() => {
-    if (book.ai_chat_enabled && book.id) {
-      const supabase = createClient();
-      supabase
-        .from("chatbots")
-        .select("*")
-        .eq("linked_book_id", book.id)
-        .single()
-        .then(({ data, error }) => {
-          if (!error && data) {
-            setChatbot(data as Chatbot);
-          }
-        });
-    }
-  }, [book.ai_chat_enabled, book.id]);
-
-  const handleBuy = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (book.purchase_link) {
-      window.open(book.purchase_link, "_blank", "noopener,noreferrer");
-    }
-  };
-
-  const handleDownload = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (book.pdf_url) {
-      setIsDownloading(true);
-      // Open PDF in new tab or trigger download
-      const link = document.createElement("a");
-      link.href = book.pdf_url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      setTimeout(() => setIsDownloading(false), 1000);
-    }
-  };
-
-  const handleRequest = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // If user is not logged in, show sign-in dialog
-    if (!user) {
-      setShowSignInDialog(true);
-      return;
-    }
-
-    if (isRequesting || requestSuccess) return;
-
-    setIsRequesting(true);
-    try {
-      const supabase = createClient();
-      const { error } = await supabase
-        .from("requests")
-        .insert([
-          {
-            type: "book" as const,
-            title: book.title,
-            description: `Request for book: ${book.title}${book.author ? ` by ${book.author}` : ""}`,
-            status: "pending" as const,
-          },
-        ] as any);
-
-      if (error) {
-        console.error("Error submitting request:", error);
-        alert("Failed to submit request. Please try again.");
-      } else {
-        setRequestSuccess(true);
-        setTimeout(() => setRequestSuccess(false), 3000);
-      }
-    } catch (error) {
-      console.error("Error submitting request:", error);
-      alert("Failed to submit request. Please try again.");
-    } finally {
-      setIsRequesting(false);
-    }
-  };
-
-
   return (
-    <div className="group relative block rounded-lg transition-all duration-500 bg-background/40 backdrop-blur-xl border border-border/50 hover:bg-background/60 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2">
+    <div className="group relative block rounded-lg transition-all duration-500 bg-background/40 backdrop-blur-xl border border-border/50 lg:hover:bg-background/60 lg:hover:border-primary/50 lg:hover:shadow-2xl lg:hover:shadow-primary/10 lg:hover:-translate-y-2">
       <GlowingEffect
         disabled={false}
         spread={30}
@@ -124,129 +26,42 @@ export function BookCard({ book }: BookCardProps) {
         borderWidth={1}
       />
       <div className="relative z-10 rounded-lg overflow-hidden">
-        <Link href={`/books/${book.id}`}>
-          {book.cover_image ? (
-            <div className="relative w-full h-64 overflow-hidden">
-              <img
+        <Link href={`/books/${book.slug || book.id}`}>
+          <div className="relative aspect-[2/3] w-full overflow-hidden">
+            {book.cover_image ? (
+              <Image
                 src={book.cover_image}
                 alt={book.title}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                fill
+                className="object-cover transition-transform duration-300 lg:group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            </div>
-          ) : (
-            <div className="w-full h-64 bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 backdrop-blur-sm flex items-center justify-center">
-              <span className="text-muted-foreground">No Cover</span>
-            </div>
-          )}
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 backdrop-blur-sm flex items-center justify-center">
+                <span className="text-muted-foreground text-xs md:text-base">No Cover</span>
+              </div>
+            )}
+
+            {/* AI Icon in top right */}
+            {book.ai_chat_enabled && (
+              <div className="absolute top-1 right-1 md:top-2 md:right-2 bg-black/60 backdrop-blur-md p-1 md:p-1.5 rounded-full text-white shadow-lg border border-white/20 z-20">
+                <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-purple-400" />
+              </div>
+            )}
+          </div>
         </Link>
-        <div className="p-4">
-          <Link href={`/books/${book.id}`}>
-            <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors line-clamp-2">
+        <div className="p-2 md:p-4">
+          <Link href={`/books/${book.slug || book.id}`}>
+            <h3 className="text-sm md:text-lg font-semibold mb-1 md:mb-2 lg:group-hover:text-primary transition-colors line-clamp-2 leading-tight">
               {book.title}
             </h3>
           </Link>
           {book.author && (
-            <p className="text-sm text-muted-foreground mb-2">
+            <p className="text-xs md:text-sm text-muted-foreground mb-1 md:mb-2 line-clamp-1">
               By {book.author}
             </p>
           )}
-          {book.edition && (
-            <p className="text-xs text-muted-foreground mb-2">
-              Edition: {book.edition}
-            </p>
-          )}
-          {book.tags && book.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-2 mb-3">
-              {book.tags.slice(0, 2).map((tag, idx) => (
-                <span
-                  key={idx}
-                  className="text-xs bg-primary/15 backdrop-blur-sm px-2 py-1 rounded-full border border-primary/30 text-primary font-medium"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-          {book.ai_chat_enabled && chatbot && (
-            <div className="mb-3">
-              <Link
-                href={`/books/${book.id}/chat`}
-                className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-primary/15 backdrop-blur-sm text-primary rounded-full border border-primary/30 hover:bg-primary/25 transition-colors"
-              >
-                Chat with {chatbot.name}
-              </Link>
-            </div>
-          )}
-          <div className="flex flex-wrap gap-2 mt-3">
-            {book.purchase_link && (
-              <Button
-                onClick={handleBuy}
-                variant="default"
-                size="sm"
-                className="flex-1 min-w-[80px]"
-              >
-                Buy
-              </Button>
-            )}
-            {user ? (
-              // Logged in users see Download button
-              book.pdf_url && (
-                <Button
-                  onClick={handleDownload}
-                  variant={book.purchase_link ? "outline" : "default"}
-                  size="sm"
-                  className={book.purchase_link ? "flex-1 min-w-[80px] backdrop-blur-sm" : "w-full"}
-                  disabled={isDownloading}
-                >
-                  {isDownloading ? "Downloading..." : "Download"}
-                </Button>
-              )
-            ) : (
-              // Logged out users see Request button
-              <Button
-                onClick={handleRequest}
-                variant={book.purchase_link ? "outline" : "default"}
-                size="sm"
-                className={book.purchase_link ? "flex-1 min-w-[80px] backdrop-blur-sm" : "w-full"}
-                disabled={isRequesting || requestSuccess}
-              >
-                {isRequesting
-                  ? "Requesting..."
-                  : requestSuccess
-                    ? "Requested!"
-                    : "Request"}
-              </Button>
-            )}
-          </div>
         </div>
       </div>
-
-      {/* Sign In Dialog */}
-      <Dialog open={showSignInDialog} onOpenChange={setShowSignInDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Sign In Required</DialogTitle>
-            <DialogDescription>
-              Please sign in to request this book. You need an account to submit book requests.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setShowSignInDialog(false)}
-            >
-              Cancel
-            </Button>
-            <Button asChild>
-              <Link href="/login" onClick={() => setShowSignInDialog(false)}>
-                Sign In
-              </Link>
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
-

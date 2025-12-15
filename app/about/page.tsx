@@ -3,6 +3,7 @@ import { BookOpen, Calculator, MessageSquare, Users, Target, Lightbulb, Heart, S
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { AboutHero } from "@/components/about-hero";
 
 // Icon mapping helper
 const iconMap: Record<string, LucideIcon> = {
@@ -18,7 +19,7 @@ const iconMap: Record<string, LucideIcon> = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data: seoMetadata } = await getSEOMetadata("about");
-  
+
   return {
     title: seoMetadata?.meta_title || "About Us | ePharmatica",
     description: seoMetadata?.meta_description || "Learn about ePharmatica - your comprehensive pharmaceutical knowledge platform",
@@ -49,7 +50,7 @@ export default async function AboutPage() {
 
   const missionTitle = aboutUs?.mission_title || "Our Mission";
   const missionContent = aboutUs?.mission_content || "To provide accessible, reliable, and up-to-date pharmaceutical knowledge to healthcare professionals, students, and the general public.";
-  
+
   const visionTitle = aboutUs?.vision_title || "Our Vision";
   const visionContent = aboutUs?.vision_content || "To become the leading global platform for pharmaceutical education and knowledge sharing.";
 
@@ -71,73 +72,36 @@ export default async function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      {heroImage ? (
-        <section className="relative w-full min-h-[500px] md:min-h-[600px] overflow-hidden">
-          <Image
-            src={heroImage}
-            alt={heroHeading}
-            fill
-            className="object-cover"
-            priority
-            unoptimized
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/50 via-chart-5/40 to-chart-4/40 flex items-center justify-center">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
-            <div className="mx-auto max-w-7xl px-4 text-center text-white relative z-10">
-              <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent drop-shadow-2xl">
-                {heroHeading}
-              </h1>
-              <p className="text-xl md:text-2xl text-white/95 max-w-3xl mx-auto drop-shadow-lg">
-                {heroSubtitle}
-              </p>
-            </div>
-          </div>
-        </section>
-      ) : (
-        <section className="relative w-full min-h-[500px] md:min-h-[600px] overflow-hidden">
-          <div className="w-full h-full bg-gradient-to-br from-primary/25 via-chart-5/20 to-chart-4/20 flex items-center justify-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--primary)/0.2,transparent_50%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,var(--chart-4)/0.15,transparent_50%)]" />
-            <div className="mx-auto max-w-7xl px-4 text-center relative z-10 py-16 md:py-24">
-              <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
-                {heroHeading}
-              </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                {heroSubtitle}
-              </p>
-            </div>
-          </div>
-        </section>
-      )}
+      <AboutHero heading={heroHeading} subtitle={heroSubtitle} />
 
       {/* Mission & Vision */}
       {(missionContent || visionContent) && (
         <section className="relative w-full py-12 md:py-16 bg-background overflow-hidden">
           <div className="mx-auto max-w-7xl px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
-            {missionContent && (
-              <div className="bg-card border border-border rounded-lg p-8">
-                <div className="flex items-center gap-3 mb-4">
-                  <Target className="h-8 w-8 text-primary" />
-                  <h2 className="text-2xl font-bold">{missionTitle}</h2>
+              {missionContent && (
+                <div className="bg-card border border-border rounded-lg p-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Target className="h-8 w-8 text-primary" />
+                    <h2 className="text-2xl font-bold">{missionTitle}</h2>
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {missionContent}
+                  </p>
                 </div>
-                <p className="text-muted-foreground leading-relaxed">
-                  {missionContent}
-                </p>
-              </div>
-            )}
+              )}
 
-            {visionContent && (
-              <div className="bg-card border border-border rounded-lg p-8">
-                <div className="flex items-center gap-3 mb-4">
-                  <Lightbulb className="h-8 w-8 text-primary" />
-                  <h2 className="text-2xl font-bold">{visionTitle}</h2>
+              {visionContent && (
+                <div className="bg-card border border-border rounded-lg p-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Lightbulb className="h-8 w-8 text-primary" />
+                    <h2 className="text-2xl font-bold">{visionTitle}</h2>
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {visionContent}
+                  </p>
                 </div>
-                <p className="text-muted-foreground leading-relaxed">
-                  {visionContent}
-                </p>
-              </div>
-            )}
+              )}
             </div>
           </div>
         </section>
@@ -148,32 +112,32 @@ export default async function AboutPage() {
         <section className="relative w-full py-12 md:py-16 bg-background overflow-hidden">
           <div className="mx-auto max-w-7xl px-4">
             <div className="text-center mb-12 relative z-10">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">{featuresTitle}</h2>
-            {featuresSubtitle && (
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                {featuresSubtitle}
-              </p>
-            )}
-          </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">{featuresTitle}</h2>
+              {featuresSubtitle && (
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                  {featuresSubtitle}
+                </p>
+              )}
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
               {features.map((feature, index) => {
-              const IconComponent = iconMap[feature.icon] || BookOpen;
-              return (
-                <Link
-                  key={index}
-                  href={feature.link || "#"}
-                  className="group bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-all hover:border-primary"
-                >
-                  <IconComponent className="h-10 w-10 text-primary mb-4 group-hover:scale-110 transition-transform" />
-                  <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
-                    {feature.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    {feature.description}
-                  </p>
-                </Link>
-              );
+                const IconComponent = iconMap[feature.icon] || BookOpen;
+                return (
+                  <Link
+                    key={index}
+                    href={feature.link || "#"}
+                    className="group bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-all hover:border-primary"
+                  >
+                    <IconComponent className="h-10 w-10 text-primary mb-4 group-hover:scale-110 transition-transform" />
+                    <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
+                      {feature.title}
+                    </h3>
+                    <p className="text-muted-foreground text-sm">
+                      {feature.description}
+                    </p>
+                  </Link>
+                );
               })}
             </div>
           </div>
@@ -185,28 +149,28 @@ export default async function AboutPage() {
         <section className="relative w-full py-12 md:py-16 bg-background overflow-hidden">
           <div className="mx-auto max-w-7xl px-4">
             <div className="text-center mb-12 relative z-10">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">{valuesTitle}</h2>
-            {valuesSubtitle && (
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                {valuesSubtitle}
-              </p>
-            )}
-          </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">{valuesTitle}</h2>
+              {valuesSubtitle && (
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                  {valuesSubtitle}
+                </p>
+              )}
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
               {values.map((value, index) => {
-              const IconComponent = iconMap[value.icon] || Shield;
-              return (
-                <div key={index} className="text-center p-6">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-                    <IconComponent className="h-8 w-8 text-primary" />
+                const IconComponent = iconMap[value.icon] || Shield;
+                return (
+                  <div key={index} className="text-center p-6">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                      <IconComponent className="h-8 w-8 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">{value.title}</h3>
+                    <p className="text-muted-foreground text-sm">
+                      {value.description}
+                    </p>
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">{value.title}</h3>
-                  <p className="text-muted-foreground text-sm">
-                    {value.description}
-                  </p>
-                </div>
-              );
+                );
               })}
             </div>
           </div>

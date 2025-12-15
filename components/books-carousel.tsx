@@ -63,7 +63,7 @@ export function BooksCarousel({ books }: BooksCarouselProps) {
                   animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`,
                 }}
               >
-                <Link href={`/books/${book.id}`} className="group block h-full">
+                <Link href={`/books/${book.slug || book.id}`} className="group block h-full">
                   <Card className="h-full transition-all duration-500 border border-border/50 bg-background/40 backdrop-blur-xl hover:bg-background/60 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2 overflow-hidden">
                     {/* Book Cover & Info Overlay */}
                     <div className="aspect-[3/4] relative overflow-hidden">

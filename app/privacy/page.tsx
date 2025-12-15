@@ -3,6 +3,7 @@ import { getSiteSettings } from "@/lib/supabase/queries";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { LegalHero } from "@/components/legal-hero";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | ePharmatica",
@@ -16,6 +17,10 @@ export default async function PrivacyPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <LegalHero
+        heading="Privacy Policy"
+        subtitle="How we collect, use, and protect your data."
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Link href="/">
           <Button variant="ghost" className="mb-8">
@@ -25,9 +30,6 @@ export default async function PrivacyPage() {
         </Link>
 
         <div className="prose prose-slate dark:prose-invert max-w-none">
-          <h1 className="text-4xl font-bold mb-4 text-foreground">
-            Privacy Policy
-          </h1>
           <p className="text-muted-foreground mb-8">
             Last updated: {new Date().toLocaleDateString()}
           </p>

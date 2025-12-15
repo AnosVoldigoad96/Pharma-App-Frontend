@@ -44,9 +44,11 @@ export type Book = {
   isbn: string | null
   ai_chat_enabled: boolean
   seo_id: string | null
+  slug: string
   created_at: string
   updated_at: string
   is_featured: boolean
+  r2_storage_key: string | null
 }
 
 export type BookKnowledge = {

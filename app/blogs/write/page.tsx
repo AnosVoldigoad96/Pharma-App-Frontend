@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/auth-client";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import Image from "next/image";
+import { BlogCreationHero } from "@/components/blog-creation-hero";
+import { BloggingFacts } from "@/components/blogging-facts";
 
 export default function WriteBlogPage() {
   const { user, profile, loading } = useAuth();
@@ -245,159 +247,168 @@ export default function WriteBlogPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12">
-      <Link
-        href="/blogs"
-        className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        <span>Back to Blogs</span>
-      </Link>
+    <div className="min-h-screen bg-background pb-12">
+      <BlogCreationHero />
 
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">Write a Blog</h1>
-        <p className="text-muted-foreground">
-          Create a blog post. It will be reviewed by an admin before publishing.
-        </p>
-      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Main Content - Form */}
+          <div className="lg:col-span-3">
+            <Link
+              href="/blogs"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back to Blogs</span>
+            </Link>
 
-      {submitStatus.type && (
-        <div
-          className={`mb-6 p-4 rounded-md border ${
-            submitStatus.type === "success"
-              ? "bg-green-50 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800"
-              : "bg-red-50 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800"
-          }`}
-        >
-          {submitStatus.message}
-        </div>
-      )}
+            {submitStatus.type && (
+              <div
+                className={`mb-6 p-4 rounded-md border ${submitStatus.type === "success"
+                    ? "bg-green-50 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800"
+                    : "bg-red-50 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800"
+                  }`}
+              >
+                {submitStatus.message}
+              </div>
+            )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Title */}
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium mb-2">
-            Title *
-          </label>
-          <Input
-            id="title"
-            type="text"
-            required
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            placeholder="Enter blog title"
-          />
-          {brandName && (
-            <p className="text-xs text-muted-foreground mt-1">
-              Brand name "{brandName}" will be automatically appended to the title
-            </p>
-          )}
-        </div>
+            <form onSubmit={handleSubmit} className="space-y-6 bg-card border border-border rounded-xl p-6 md:p-8 shadow-sm">
+              {/* Title */}
+              <div>
+                <label htmlFor="title" className="block text-sm font-medium mb-2">
+                  Title *
+                </label>
+                <Input
+                  id="title"
+                  type="text"
+                  required
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="Enter blog title"
+                  className="text-lg font-medium"
+                />
+                {brandName && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Brand name "{brandName}" will be automatically appended to the title
+                  </p>
+                )}
+              </div>
 
-        {/* Subtitle */}
-        <div>
-          <label htmlFor="subtitle" className="block text-sm font-medium mb-2">
-            Subtitle
-          </label>
-          <Input
-            id="subtitle"
-            type="text"
-            value={formData.subtitle}
-            onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-            placeholder="Enter subtitle (optional)"
-          />
-        </div>
-
-        {/* Excerpt */}
-        <div>
-          <label htmlFor="excerpt" className="block text-sm font-medium mb-2">
-            Excerpt
-          </label>
-          <textarea
-            id="excerpt"
-            value={formData.excerpt}
-            onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-            placeholder="Brief summary of the blog post (optional)"
-            className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring min-h-[80px]"
-            rows={3}
-          />
-        </div>
-
-        {/* Cover Image Upload */}
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            Cover Image
-          </label>
-          {formData.cover_image ? (
-            <div className="relative w-full max-w-md">
-              <div className="relative aspect-video rounded-md overflow-hidden border border-input">
-                <Image
-                  src={formData.cover_image}
-                  alt="Cover preview"
-                  fill
-                  className="object-cover"
+              {/* Subtitle */}
+              <div>
+                <label htmlFor="subtitle" className="block text-sm font-medium mb-2">
+                  Subtitle
+                </label>
+                <Input
+                  id="subtitle"
+                  type="text"
+                  value={formData.subtitle}
+                  onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                  placeholder="Enter subtitle (optional)"
                 />
               </div>
-              <Button
-                type="button"
-                variant="destructive"
-                size="sm"
-                onClick={removeCoverImage}
-                className="absolute top-2 right-2"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          ) : (
-            <div className="border-2 border-dashed border-input rounded-md p-6 text-center">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-                id="cover-image-upload"
-              />
-              <label
-                htmlFor="cover-image-upload"
-                className="cursor-pointer flex flex-col items-center gap-2"
-              >
-                <Upload className="h-8 w-8 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">
-                  {isUploadingImage
-                    ? "Uploading..."
-                    : "Click to upload cover image (max 1MB)"}
-                </span>
-              </label>
-            </div>
-          )}
-        </div>
 
-        {/* Content - Rich Text Editor */}
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            Content *
-          </label>
-          <RichTextEditor
-            content={formData.content}
-            onChange={(content) => setFormData({ ...formData, content })}
-            placeholder="Write your blog post content here..."
-          />
-        </div>
+              {/* Excerpt */}
+              <div>
+                <label htmlFor="excerpt" className="block text-sm font-medium mb-2">
+                  Excerpt
+                </label>
+                <textarea
+                  id="excerpt"
+                  value={formData.excerpt}
+                  onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                  placeholder="Brief summary of the blog post (optional)"
+                  className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring min-h-[80px]"
+                  rows={3}
+                />
+              </div>
 
-        {/* Submit Buttons */}
-        <div className="flex items-center gap-4 pt-6 border-t">
-          <Button type="submit" disabled={isSubmitting || isUploadingImage} className="gap-2">
-            <Save className="h-4 w-4" />
-            {isSubmitting ? "Submitting..." : "Submit for Review"}
-          </Button>
-          <Link href="/blogs">
-            <Button type="button" variant="outline">
-              Cancel
-            </Button>
-          </Link>
+              {/* Cover Image Upload - HIDDEN */}
+              {/* 
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Cover Image
+                </label>
+                {formData.cover_image ? (
+                  <div className="relative w-full max-w-md">
+                    <div className="relative aspect-video rounded-md overflow-hidden border border-input">
+                      <Image
+                        src={formData.cover_image}
+                        alt="Cover preview"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={removeCoverImage}
+                      className="absolute top-2 right-2"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="border-2 border-dashed border-input rounded-md p-6 text-center">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      id="cover-image-upload"
+                    />
+                    <label
+                      htmlFor="cover-image-upload"
+                      className="cursor-pointer flex flex-col items-center gap-2"
+                    >
+                      <Upload className="h-8 w-8 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">
+                        {isUploadingImage
+                          ? "Uploading..."
+                          : "Click to upload cover image (max 1MB)"}
+                      </span>
+                    </label>
+                  </div>
+                )}
+              </div>
+              */}
+
+              {/* Content - Rich Text Editor */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Content *
+                </label>
+                <RichTextEditor
+                  content={formData.content}
+                  onChange={(content) => setFormData({ ...formData, content })}
+                  placeholder="Write your blog post content here..."
+                />
+              </div>
+
+              {/* Submit Buttons */}
+              <div className="flex items-center gap-4 pt-6 border-t">
+                <Button type="submit" disabled={isSubmitting || isUploadingImage} className="gap-2">
+                  <Save className="h-4 w-4" />
+                  {isSubmitting ? "Submitting..." : "Submit for Review"}
+                </Button>
+                <Link href="/blogs">
+                  <Button type="button" variant="outline">
+                    Cancel
+                  </Button>
+                </Link>
+              </div>
+            </form>
+          </div>
+
+          {/* Sidebar - Facts */}
+          <div className="hidden lg:block lg:col-span-1">
+            <BloggingFacts />
+          </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

@@ -37,52 +37,92 @@ export function Footer({ siteSettings }: FooterProps) {
   ];
 
   return (
-    <footer className="relative bg-background border-t border-border mt-auto overflow-hidden">
-      <div className="mx-auto max-w-7xl px-4 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-          {/* Company Branding Section */}
-          <div className="lg:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
+    <footer className="relative mt-auto overflow-hidden border-t border-white/10 bg-background/80 backdrop-blur-xl">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl translate-y-1/2" />
+      </div>
+
+      {/* SECTION 1: Brand, Links, Contact, Follow */}
+      <div className="relative mx-auto max-w-7xl px-4 py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
+
+          {/* 1. Brand Info */}
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-3">
               {brandLogo && (
-                <Image
-                  src={brandLogo}
-                  alt={brandName}
-                  width={32}
-                  height={32}
-                  className="object-contain"
-                  unoptimized
-                />
+                <div className="relative">
+                  <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full" />
+                  <Image
+                    src={brandLogo}
+                    alt={brandName}
+                    width={40}
+                    height={40}
+                    className="relative object-contain"
+                    unoptimized
+                  />
+                </div>
               )}
-              <h3 className="text-xl font-bold">{brandName}</h3>
+              <h3 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+                {brandName}
+              </h3>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-              Your trusted partner for pharmaceutical knowledge. Dedicated to providing 
-              comprehensive resources, tools, and community support for healthcare professionals 
-              and students.
+            <p className="text-muted-foreground leading-relaxed max-w-md">
+              Your trusted partner for pharmaceutical knowledge. Dedicated to providing
+              comprehensive resources, tools, and community support.
             </p>
-            {/* Why Choose Us - Stats */}
-            <div className="grid grid-cols-2 gap-4 mt-6">
-              <div>
-                <div className="text-2xl font-bold text-primary">50k+</div>
-                <div className="text-xs text-muted-foreground">Active Users</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-primary">1000+</div>
-                <div className="text-xs text-muted-foreground">Resources</div>
-              </div>
+
+            {/* Follow Us */}
+            <div className="pt-2">
+              <h4 className="font-semibold text-foreground/90 mb-4">Follow Us</h4>
+              {socialLinks.length > 0 ? (
+                <div className="flex flex-wrap gap-4">
+                  {socialLinks.map((link, index) => {
+                    const IconComponent = socialIcons[link.platform.toLowerCase()] || ExternalLinkIcon;
+                    return (
+                      <a
+                        key={index}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group relative flex items-center justify-center transition-all duration-300 hover:-translate-y-1"
+                        aria-label={link.platform}
+                        title={link.platform}
+                      >
+                        {link.icon ? (
+                          <Image
+                            src={link.icon}
+                            alt={link.platform}
+                            width={32}
+                            height={32}
+                            className="object-contain transition-transform duration-300 group-hover:scale-110"
+                            unoptimized
+                          />
+                        ) : (
+                          <IconComponent className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
+                        )}
+                      </a>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Connect with us on social media.</p>
+              )}
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h4 className="font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2">
+          {/* 2. Quick Links - Horizontal on Mobile, Vertical/Grid on Desktop */}
+          <div className="flex flex-col gap-6">
+            <h4 className="font-semibold text-foreground/90 mb-4">Quick Links</h4>
+            <ul className="flex flex-row flex-wrap gap-x-8 gap-y-3 lg:flex-col lg:gap-y-3 lg:gap-x-0">
               {quickLinks.map((link) => (
                 <li key={link.link}>
                   <Link
                     href={link.link}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors whitespace-nowrap"
                   >
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary/0 group-hover:bg-primary transition-all duration-300" />
                     {link.name}
                   </Link>
                 </li>
@@ -90,107 +130,96 @@ export function Footer({ siteSettings }: FooterProps) {
             </ul>
           </div>
 
-          {/* Contact Us */}
-          <div>
-            <h4 className="font-semibold mb-4">Contact Us</h4>
-            <ul className="space-y-3">
-              {contactAddress && (
-                <li className="flex items-start gap-3">
-                  <MapPin className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-muted-foreground leading-relaxed">
-                    {contactAddress}
-                  </span>
-                </li>
-              )}
-              {contactPhone && (
-                <li className="flex items-center gap-3">
-                  <Phone className="h-4 w-4 text-primary flex-shrink-0" />
-                  <a
-                    href={`tel:${contactPhone}`}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {contactPhone}
-                  </a>
-                </li>
-              )}
-              {contactEmail && (
-                <li className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 text-primary flex-shrink-0" />
-                  <a
-                    href={`mailto:${contactEmail}`}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors break-all"
-                  >
-                    {contactEmail}
-                  </a>
-                </li>
-              )}
-            </ul>
-          </div>
-
-          {/* Follow Us & Newsletter */}
-          <div>
-            <h4 className="font-semibold mb-4">Follow Us</h4>
-            {socialLinks.length > 0 && (
-              <div className="flex flex-wrap gap-3 mb-6">
-                {socialLinks.map((link, index) => {
-                  const IconComponent = socialIcons[link.platform.toLowerCase()] || ExternalLinkIcon;
-                  return (
-                    <a
-                      key={index}
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center w-10 h-10 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"
-                      aria-label={link.platform}
-                    >
-                      {link.icon ? (
-                        <Image
-                          src={link.icon}
-                          alt={link.platform}
-                          width={20}
-                          height={20}
-                          className="object-contain"
-                          unoptimized
-                        />
-                      ) : (
-                        <IconComponent className="h-5 w-5" />
-                      )}
-                    </a>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Newsletter */}
+          {/* 3. Contact & Follow Us */}
+          <div className="flex flex-col gap-8">
+            {/* Contact */}
             <div>
-              <h4 className="font-semibold mb-3">Newsletter</h4>
-              <p className="text-sm text-muted-foreground mb-3">
-                Stay updated with the latest pharmaceutical resources and updates.
+              <h4 className="font-semibold text-foreground/90 mb-6">Contact Us</h4>
+              <ul className="space-y-4">
+                {contactAddress && (
+                  <li className="flex items-start gap-3 group">
+                    <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                      <MapPin className="h-4 w-4" />
+                    </div>
+                    <span className="text-sm text-muted-foreground leading-relaxed pt-1.5">
+                      {contactAddress}
+                    </span>
+                  </li>
+                )}
+                {contactPhone && (
+                  <li className="flex items-center gap-3 group">
+                    <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                      <Phone className="h-4 w-4" />
+                    </div>
+                    <a
+                      href={`tel:${contactPhone}`}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors pt-0.5"
+                    >
+                      {contactPhone}
+                    </a>
+                  </li>
+                )}
+                {contactEmail && (
+                  <li className="flex items-center gap-3 group">
+                    <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                      <Mail className="h-4 w-4" />
+                    </div>
+                    <a
+                      href={`mailto:${contactEmail}`}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors break-all pt-0.5"
+                    >
+                      {contactEmail}
+                    </a>
+                  </li>
+                )}
+              </ul>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+
+      {/* SECTION 2: Newsletter (Inspired Design) */}
+      <div className="relative border-y border-white/5 bg-muted/20 backdrop-blur-sm">
+        <div className="mx-auto max-w-4xl px-4 py-16 text-center">
+          <div className="flex flex-col items-center gap-6">
+            <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium border border-primary/20">
+              Newsletter
+            </span>
+            <div className="space-y-4 max-w-2xl">
+              <h3 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/80">
+                Stay Updated with Exclusive Resources
+              </h3>
+              <p className="text-muted-foreground text-lg leading-relaxed">
+                Subscribe to our newsletter and be the first to know about new tools,
+                community discussions, and pharmaceutical updates.
               </p>
+            </div>
+            <div className="w-full max-w-xl mt-4">
               <NewsletterForm />
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-border">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="text-sm text-muted-foreground text-center md:text-left">
-              <p>
-                © {new Date().getFullYear()} {brandName}. All rights reserved.
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
+      {/* SECTION 3: Copyright & Legal */}
+      <div className="relative bg-background/90 border-b border-white/5">
+        <div className="mx-auto max-w-7xl px-4 py-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <p className="text-sm text-muted-foreground text-center md:text-left">
+              © {new Date().getFullYear()} {brandName}. All rights reserved.
+            </p>
+            <div className="flex items-center gap-8 text-sm font-medium">
               <Link
                 href="/privacy"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground hover:text-primary transition-colors hover:underline decoration-primary/50 underline-offset-4"
               >
                 Privacy Policy
               </Link>
-              <span className="text-muted-foreground/60">•</span>
               <Link
                 href="/terms"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground hover:text-primary transition-colors hover:underline decoration-primary/50 underline-offset-4"
               >
                 Terms & Conditions
               </Link>
@@ -198,9 +227,15 @@ export function Footer({ siteSettings }: FooterProps) {
           </div>
         </div>
       </div>
+
+      {/* SECTION 4: Developer Credit */}
+      <div className="relative bg-muted/30 py-4">
+        <div className="mx-auto max-w-7xl px-4 text-center">
+          <p className="text-xs text-muted-foreground/80 font-medium tracking-wide">
+            Envisioned and Developed by <span className="text-primary font-bold">Dr. Hassaan Ahmad Qazi</span>
+          </p>
+        </div>
+      </div>
     </footer>
   );
 }
-
-
-

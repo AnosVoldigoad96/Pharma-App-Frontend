@@ -23,11 +23,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
 
   const fetchProfile = async (userId: string) => {
+    console.log("Fetching profile for:", userId);
     const { data, error } = await supabase
       .from("public_users")
       .select("*")
       .eq("user_id", userId)
       .single();
+
+    console.log("Fetch profile result:", JSON.stringify({ data, error }, null, 2));
 
     if (!error && data) {
       setProfile(data as PublicUser);

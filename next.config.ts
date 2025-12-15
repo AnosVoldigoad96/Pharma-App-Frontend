@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  reactCompiler: true,
+  reactStrictMode: false, // Disable strict mode to prevent double-mounting issues with workers
   images: {
     remotePatterns: [
       {
@@ -22,6 +22,8 @@ const nextConfig: NextConfig = {
       test: /\.glb$/,
       type: 'asset/resource',
     });
+    // Required for pdfjs-dist
+    config.resolve.alias.canvas = false;
     return config;
   },
   turbopack: {},

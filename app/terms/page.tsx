@@ -3,6 +3,7 @@ import { getSiteSettings } from "@/lib/supabase/queries";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { LegalHero } from "@/components/legal-hero";
 
 export const metadata: Metadata = {
   title: "Terms & Conditions | ePharmatica",
@@ -15,6 +16,10 @@ export default async function TermsPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <LegalHero
+        heading="Terms & Conditions"
+        subtitle="The rules and regulations for using our website."
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Link href="/">
           <Button variant="ghost" className="mb-8">
@@ -24,9 +29,6 @@ export default async function TermsPage() {
         </Link>
 
         <div className="prose prose-slate dark:prose-invert max-w-none">
-          <h1 className="text-4xl font-bold mb-4 text-foreground">
-            Terms & Conditions
-          </h1>
           <p className="text-muted-foreground mb-8">
             Last updated: {new Date().toLocaleDateString()}
           </p>

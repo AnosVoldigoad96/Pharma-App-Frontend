@@ -34,7 +34,7 @@ export function ToolCard({ tool }: ToolCardProps) {
   }
 
   return (
-    <div className="group relative block rounded-lg transition-all duration-500 bg-background/40 backdrop-blur-xl border border-border/50 hover:bg-background/60 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2 h-full flex flex-col">
+    <div className="group relative block rounded-lg transition-all duration-500 bg-background/40 backdrop-blur-xl border border-border/50 lg:hover:bg-background/60 lg:hover:border-primary/50 lg:hover:shadow-2xl lg:hover:shadow-primary/10 lg:hover:-translate-y-2 h-full flex flex-col">
       <GlowingEffect
         disabled={false}
         spread={30}
@@ -47,7 +47,7 @@ export function ToolCard({ tool }: ToolCardProps) {
       <div className="relative z-10 rounded-lg overflow-hidden h-full flex flex-col">
         <div className="p-4 flex flex-col h-full">
           <Link href={toolUrl} className="relative z-20 block">
-            <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors line-clamp-2">
+            <h3 className="text-lg font-semibold mb-2 lg:group-hover:text-primary transition-colors line-clamp-2">
               {tool.title}
             </h3>
           </Link>
@@ -65,12 +65,6 @@ export function ToolCard({ tool }: ToolCardProps) {
                 </span>
               </div>
             )}
-            <Link
-              href={toolUrl}
-              className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 border-2 border-primary/30 hover:border-primary/50 transition-all relative z-20 cursor-pointer hover:scale-105"
-            >
-              Use Tool
-            </Link>
           </div>
         </div>
       </div>

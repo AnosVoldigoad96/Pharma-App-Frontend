@@ -1,6 +1,8 @@
 import { getTools, getToolCategories, getPageContent } from "@/lib/supabase/queries";
 import { ToolsClient } from "@/components/tools-client";
-import Image from "next/image";
+import { ToolsHero } from "@/components/tools-hero";
+import { ToolRequestSection } from "@/components/tool-request-section";
+import { QuoteSection } from "@/components/quote-section";
 
 export default async function ToolsPage({
   searchParams,
@@ -10,7 +12,7 @@ export default async function ToolsPage({
   // Handle both Promise and direct object (Next.js 15+ compatibility)
   const params = searchParams instanceof Promise ? await searchParams : searchParams;
   const categoryId = params?.category;
-  
+
   const [toolsResult, categoriesResult, pageContentResult] = await Promise.all([
     getTools(undefined, categoryId),
     getToolCategories(),
@@ -30,70 +32,33 @@ export default async function ToolsPage({
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      {heroSection && (heading || subtitle) && (
-        <section className="relative w-full min-h-[500px] md:min-h-[600px] overflow-hidden">
-          {image ? (
-            <>
-              <Image
-                src={image}
-                alt={heading || "Tools Hero"}
-                fill
-                className="object-cover"
-                priority
-                unoptimized
-              />
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/50 via-chart-5/40 to-chart-4/40 flex items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
-                <div className="mx-auto max-w-7xl px-4 text-center text-white relative z-10">
-                  {heading && (
-                    <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent drop-shadow-2xl">
-                      {heading}
-                    </h1>
-                  )}
-                  {subtitle && (
-                    <p className="text-xl md:text-2xl text-white/95 max-w-3xl mx-auto drop-shadow-lg">
-                      {subtitle}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-primary/25 via-chart-5/20 to-chart-4/20 flex items-center justify-center relative overflow-hidden">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--primary)/0.2,transparent_50%)]" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,var(--chart-4)/0.15,transparent_50%)]" />
-              <div className="mx-auto max-w-7xl px-4 text-center relative z-10">
-                {heading && (
-                  <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
-                    {heading}
-                  </h1>
-                )}
-                {subtitle && (
-                  <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-                    {subtitle}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-        </section>
-      )}
+      <ToolsHero
+        heading={heading || "Pharmaceutical Tools"}
+        subtitle={subtitle || "Access our collection of pharmaceutical tools and utilities"}
+      />
 
       {/* Main Content */}
       <div className="relative w-full py-12 bg-background overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 relative z-10">
-          {!heroSection && (
-            <div className="mb-8">
-              <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">Tools</h1>
-              <p className="text-muted-foreground">
-                Access our collection of pharmaceutical tools and utilities
-              </p>
-            </div>
-          )}
+          <div className="mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent mb-2">
+              Browse Tools
+            </h2>
+            <div className="h-1 w-24 bg-gradient-to-r from-primary to-primary/50 rounded-full"></div>
+          </div>
 
           <ToolsClient tools={tools} categories={categories} initialCategory={categoryId} />
         </div>
       </div>
+
+      {/* Quote Section */}
+      <QuoteSection
+        quote="Science is a way of thinking much more than it is a body of knowledge."
+        author="Carl Sagan"
+      />
+
+      {/* Tool Request Section */}
+      <ToolRequestSection />
     </div>
   );
 }

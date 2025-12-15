@@ -3,18 +3,25 @@
 import { useEffect, useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/auth-client";
 import type { Chatbot } from "@/lib/supabase/types";
-import { Bot, LogIn, UserPlus } from "lucide-react";
+import { Bot, LogIn, UserPlus, Send } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import { Button } from "@/components/ui/button";
 
-export function PharmaAIChat() {
+export interface PharmaAIChatProps {
+    botId?: string;
+    initialMessage?: string;
+    isEmbedded?: boolean;
+}
+
+export function PharmaAIChat({ botId, initialMessage, isEmbedded = false }: PharmaAIChatProps) {
     const [chatbot, setChatbot] = useState<Chatbot | null>(null);
     const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant', content: string, tags?: string[] }>>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [showChat, setShowChat] = useState(false);
+    const [inputValue, setInputValue] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const placeholders = [
@@ -25,23 +32,32 @@ export function PharmaAIChat() {
         "Calculate the loading dose for a patient...",
     ];
 
-    // Fetch Pharma Guru chatbot and check authentication
+    // Fetch chatbot and check authentication
     useEffect(() => {
         const fetchChatbot = async () => {
             const supabase = createClient();
-            const { data, error } = await supabase
-                .from("chatbots")
-                .select("*")
-                .ilike("name", "%Pharma Guru%")
-                .single<Chatbot>();
+            let query = supabase.from("chatbots").select("*");
+
+            if (botId) {
+                query = query.eq("id", botId);
+            } else {
+                query = query.ilike("name", "%Pharma Guru%");
+            }
+
+            const { data, error } = await query.single<Chatbot>();
 
             if (!error && data) {
                 setChatbot(data as Chatbot);
                 // Add initial welcome message
                 setMessages([{
                     role: 'assistant',
-                    content: "Hello! I'm your pharmaceutical AI assistant. How can I help you today?"
+                    content: initialMessage || "Hello! I'm your pharmaceutical AI assistant. How can I help you today?"
                 }]);
+
+                // If embedded and initial message is provided, show chat immediately
+                if (isEmbedded && initialMessage) {
+                    setShowChat(true);
+                }
             }
         };
 
@@ -53,7 +69,7 @@ export function PharmaAIChat() {
 
         fetchChatbot();
         checkAuth();
-    }, []);
+    }, [botId, initialMessage, isEmbedded]);
 
     // Auto-scroll to bottom - DISABLED per user request
     // useEffect(() => {
@@ -100,9 +116,19 @@ export function PharmaAIChat() {
         sendMessageToApi(question);
     };
 
+    const handleFollowUpSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!inputValue.trim() || isLoading) return;
+
+        const message = inputValue.trim();
+        setInputValue("");
+        setMessages(prev => [...prev, { role: 'user', content: message }]);
+        sendMessageToApi(message);
+    };
+
     if (!chatbot) {
         return (
-            <div className="w-full max-w-md mx-auto h-[500px] flex items-center justify-center bg-card/95 backdrop-blur-xl border border-primary/20 rounded-3xl">
+            <div className={`w-full flex items-center justify-center bg-card/95 backdrop-blur-xl border border-primary/20 ${isEmbedded ? 'h-full border-0 bg-transparent' : 'max-w-md mx-auto h-[500px] rounded-3xl'}`}>
                 <div className="text-center space-y-3">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
                     <p className="text-primary/80 text-sm">Initializing PharmaAI...</p>
@@ -143,7 +169,10 @@ export function PharmaAIChat() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4 }}
-                        className="w-full max-w-md mx-auto overflow-hidden bg-card/95 backdrop-blur-xl border border-primary/20 rounded-3xl shadow-[0_25px_50px_rgba(0,0,0,0.2),0_0_100px_rgba(var(--primary),0.1)] flex flex-col h-[500px]"
+                        className={isEmbedded
+                            ? "w-full h-full flex flex-col bg-transparent"
+                            : "w-full max-w-md mx-auto overflow-hidden bg-card/95 backdrop-blur-xl border border-primary/20 rounded-3xl shadow-[0_25px_50px_rgba(0,0,0,0.2),0_0_100px_rgba(var(--primary),0.1)] flex flex-col h-[500px]"
+                        }
                     >
                         {/* Header */}
                         <div className="px-6 py-4 bg-muted/50 border-b border-primary/10 flex-shrink-0">
@@ -175,8 +204,8 @@ export function PharmaAIChat() {
                                     )}
 
                                     <div className={`rounded-2xl px-4 py-3 max-w-[85%] ${msg.role === 'assistant'
-                                            ? 'rounded-tl-sm bg-primary/10 border border-primary/20 text-foreground'
-                                            : 'rounded-tr-sm bg-secondary/20 border border-secondary/20 text-foreground'
+                                        ? 'rounded-tl-sm bg-primary/10 border border-primary/20 text-foreground'
+                                        : 'rounded-tr-sm bg-secondary/20 border border-secondary/20 text-foreground'
                                         }`}>
                                         <div className="text-sm leading-relaxed whitespace-pre-wrap" dangerouslySetInnerHTML={{
                                             __html: msg.content
@@ -210,47 +239,66 @@ export function PharmaAIChat() {
                             <div ref={messagesEndRef} />
                         </div>
 
-                        {/* CTA Area (Replaces Input) */}
-                        {!isLoading && (
+                        {/* Input Area or CTA */}
+                        {(!isAuthenticated && messages.filter(m => m.role === 'user').length >= 1) ? (
                             <div className="p-4 bg-muted/30 border-t border-primary/10 flex-shrink-0 animate-[slide-in_0.5s_ease-out]">
                                 <div className="text-center space-y-3">
-                                    {isAuthenticated ? (
-                                        // Authenticated: Show Ask More button
-                                        <>
-                                            <p className="text-muted-foreground text-sm">
-                                                Want to ask more questions?
-                                            </p>
-                                            <Link href="/chat">
-                                                <Button variant="default" className="w-full sm:w-auto gap-2 bg-primary hover:bg-primary/90 text-primary-foreground border-0">
-                                                    <Bot className="h-4 w-4" />
-                                                    Continue in Full Chat
-                                                </Button>
-                                            </Link>
-                                        </>
-                                    ) : (
-                                        // Not authenticated: Show sign-in options
-                                        <>
-                                            <p className="text-muted-foreground text-sm">
-                                                Sign in to continue the conversation
-                                            </p>
-                                            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                                                <Link href="/login?redirect=/chat">
-                                                    <Button variant="default" className="w-full sm:w-auto gap-2 bg-primary hover:bg-primary/90">
-                                                        <LogIn className="h-4 w-4" />
-                                                        Sign In
-                                                    </Button>
-                                                </Link>
-                                                <Link href="/signup?redirect=/chat">
-                                                    <Button variant="outline" className="w-full sm:w-auto gap-2 border-primary/20 text-foreground hover:bg-primary/10">
-                                                        <UserPlus className="h-4 w-4" />
-                                                        Create Account
-                                                    </Button>
-                                                </Link>
-                                            </div>
-                                        </>
-                                    )}
+                                    <p className="text-muted-foreground text-sm">
+                                        Sign in to continue the conversation
+                                    </p>
+                                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                                        <Link href="/login?redirect=/chat">
+                                            <Button variant="default" className="w-full sm:w-auto gap-2 bg-primary hover:bg-primary/90">
+                                                <LogIn className="h-4 w-4" />
+                                                Sign In
+                                            </Button>
+                                        </Link>
+                                        <Link href="/signup?redirect=/chat">
+                                            <Button variant="outline" className="w-full sm:w-auto gap-2 border-primary/20 text-foreground hover:bg-primary/10">
+                                                <UserPlus className="h-4 w-4" />
+                                                Create Account
+                                            </Button>
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
+                        ) : (isEmbedded || isAuthenticated) ? (
+                            <div className="p-4 bg-muted/30 border-t border-primary/10 flex-shrink-0">
+                                <form onSubmit={handleFollowUpSubmit} className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={inputValue}
+                                        onChange={(e) => setInputValue(e.target.value)}
+                                        placeholder="Type your message..."
+                                        className="flex-1 bg-background border border-primary/20 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                        disabled={isLoading}
+                                    />
+                                    <Button
+                                        type="submit"
+                                        size="icon"
+                                        disabled={!inputValue.trim() || isLoading}
+                                        className="rounded-xl bg-primary hover:bg-primary/90"
+                                    >
+                                        <Send className="h-4 w-4" />
+                                    </Button>
+                                </form>
+                            </div>
+                        ) : (
+                            !isLoading && (
+                                <div className="p-4 bg-muted/30 border-t border-primary/10 flex-shrink-0 animate-[slide-in_0.5s_ease-out]">
+                                    <div className="text-center space-y-3">
+                                        <p className="text-muted-foreground text-sm">
+                                            Want to ask more questions?
+                                        </p>
+                                        <Link href="/chat">
+                                            <Button variant="default" className="w-full sm:w-auto gap-2 bg-primary hover:bg-primary/90 text-primary-foreground border-0">
+                                                <Bot className="h-4 w-4" />
+                                                Continue in Full Chat
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </div>
+                            )
                         )}
                     </motion.div>
                 )}

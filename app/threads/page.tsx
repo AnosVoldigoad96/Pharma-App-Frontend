@@ -1,6 +1,6 @@
 import { getThreads, getPageContent } from "@/lib/supabase/queries";
 import { ThreadsClient } from "@/components/threads-client";
-import Image from "next/image";
+import { ThreadsHero } from "@/components/threads-hero";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
@@ -14,89 +14,34 @@ export default async function ThreadsPage({
   const params = searchParams instanceof Promise ? await searchParams : searchParams;
   const search = params?.search;
 
-  const [threadsResult, pageContentResult] = await Promise.all([
+  const [threadsResult] = await Promise.all([
     getThreads(),
-    getPageContent("threads"),
   ]);
 
   const threads = threadsResult.data || [];
-  let pageContent = pageContentResult.data;
-
-  // Extract hero section data
-  const heroSection = pageContent?.hero_section as Record<string, any> | null;
-  const heading = heroSection?.heading || heroSection?.title || null;
-  const subtitle = heroSection?.subheading || heroSection?.subtitle || null;
-  const image = heroSection?.image || heroSection?.background_image || null;
 
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      {heroSection && (heading || subtitle) && (
-        <section className="relative w-full min-h-[500px] md:min-h-[600px] overflow-hidden">
-          {image ? (
-            <>
-              <Image
-                src={image}
-                alt={heading || "Threads Hero"}
-                fill
-                className="object-cover"
-                priority
-                unoptimized
-              />
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/50 via-chart-5/40 to-chart-4/40 flex items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
-                <div className="mx-auto max-w-7xl px-4 text-center text-white relative z-10">
-                  {heading && (
-                    <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent drop-shadow-2xl">
-                      {heading}
-                    </h1>
-                  )}
-                  {subtitle && (
-                    <p className="text-xl md:text-2xl text-white/95 max-w-3xl mx-auto drop-shadow-lg">
-                      {subtitle}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="h-full flex items-center justify-center bg-gradient-to-br from-primary/25 via-chart-5/20 to-chart-4/20 relative overflow-hidden">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--primary)/0.2,transparent_50%)]" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,var(--chart-4)/0.15,transparent_50%)]" />
-              <div className="mx-auto max-w-7xl px-4 text-center relative z-10">
-                {heading && (
-                  <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
-                    {heading}
-                  </h1>
-                )}
-                {subtitle && (
-                  <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-                    {subtitle}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-        </section>
-      )}
+      <ThreadsHero
+        heading="Community Discussions"
+        subtitle="Join the conversation, share your knowledge, and connect with pharmaceutical professionals worldwide."
+      />
 
       {/* Main Content */}
-      <div className="relative w-full py-12 bg-gradient-to-br from-background via-chart-5/10 to-chart-3/10 overflow-hidden">
-        {/* Decorative gradient overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--primary)/0.12,transparent_70%)] pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,var(--chart-5)/0.1,transparent_70%)] pointer-events-none" />
+      <div className="relative w-full py-12 bg-background overflow-hidden">
+
+
         <div className="mx-auto max-w-7xl px-4 relative z-10">
           {/* Header with New Thread Button */}
           <div className="mb-8 flex items-center justify-between">
-            {!heroSection && (
-              <div>
-                <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">Community Discussions</h1>
-                <p className="text-muted-foreground">
-                  Join the conversation and share your knowledge
-                </p>
-              </div>
-            )}
-            <Button asChild>
+            <div>
+              <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">Latest Discussions</h2>
+              <p className="text-muted-foreground">
+                Browse topics or start your own conversation
+              </p>
+            </div>
+            <Button asChild className="bg-emerald-600 hover:bg-emerald-700 text-white">
               <Link href="/threads/new" className="flex items-center gap-2">
                 <MessageSquare className="h-4 w-4" />
                 New Thread
@@ -104,7 +49,7 @@ export default async function ThreadsPage({
             </Button>
           </div>
 
-          {/* Threads List with Filters */}
+          {/* Threads List with Sidebar */}
           <ThreadsClient threads={threads} initialSearch={search} />
         </div>
       </div>

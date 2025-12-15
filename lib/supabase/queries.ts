@@ -175,6 +175,28 @@ export async function getBooks(limit?: number, categoryId?: string, featured?: b
   return { data: data as (Book & { book_categories: { name: string } | null })[] | null, error }
 }
 
+export async function getBookBySlug(slug: string) {
+  // Check if slug is a valid UUID
+  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)
+
+  if (isUUID) {
+    const { data, error } = await supabase
+      .from('books')
+      .select('*, book_categories(name)')
+      .eq('id', slug)
+      .single()
+    return { data: data as (Book & { book_categories: { name: string } | null }) | null, error }
+  }
+
+  const { data, error } = await supabase
+    .from('books')
+    .select('*, book_categories(name)')
+    .eq('slug', slug)
+    .single()
+
+  return { data: data as (Book & { book_categories: { name: string } | null }) | null, error }
+}
+
 export async function getBookById(id: string) {
   const { data, error } = await supabase
     .from('books')
@@ -185,6 +207,8 @@ export async function getBookById(id: string) {
   return { data: data as (Book & { book_categories: { name: string } | null }) | null, error }
 }
 
+
+
 export async function getBookCategories() {
   const { data, error } = await supabase
     .from('book_categories')
@@ -194,11 +218,10 @@ export async function getBookCategories() {
   return { data: data as BookCategory[] | null, error }
 }
 
-// ==================== THREADS ====================
 export async function getThreads(limit?: number, featured?: boolean) {
   let query = supabase
     .from('threads')
-    .select('*')
+    .select('*, public_users(full_name, avatar_url)')
     .eq('is_approved', true)
     .order('created_at', { ascending: false })
 
@@ -211,7 +234,7 @@ export async function getThreads(limit?: number, featured?: boolean) {
   }
 
   const { data, error } = await query
-  return { data: data as Thread[] | null, error }
+  return { data: data as (Thread & { public_users: { full_name: string | null, avatar_url: string | null } | null })[] | null, error }
 }
 
 export async function getThreadBySlug(slug: string) {
