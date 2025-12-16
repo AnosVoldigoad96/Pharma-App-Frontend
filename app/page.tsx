@@ -1,4 +1,5 @@
 import Link from "next/link";
+export const dynamic = 'force-dynamic';
 import { getBlogs, getBooks, getThreads, getSiteSettings, getPageContent, getFeatures } from "@/lib/supabase/queries";
 import { Button } from "@/components/ui/button";
 import { FeaturesSection } from "@/components/features-section";

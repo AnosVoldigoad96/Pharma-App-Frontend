@@ -65,12 +65,14 @@ Pharmaceutical book library.
 |--------|------|-------------|
 | `id` | UUID | Primary key |
 | `title` | TEXT | Book title |
+| `slug` | TEXT | URL-friendly slug (unique, required) |
 | `author` | TEXT | Book author(s) |
 | `edition` | TEXT | Edition information |
 | `category_id` | UUID | Foreign key → `book_categories.id` |
 | `tags` | TEXT[] | Array of tags |
 | `cover_image` | TEXT | Cover image URL |
 | `pdf_url` | TEXT | PDF file URL |
+| `r2_storage_key` | TEXT | Cloudflare R2 storage key |
 | `purchase_link` | TEXT | External purchase link |
 | `isbn` | TEXT | ISBN number |
 | `ai_chat_enabled` | BOOLEAN | Enable AI chatbot for this book |
