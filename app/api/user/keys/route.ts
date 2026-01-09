@@ -21,7 +21,8 @@ async function validateGeminiKey(apiKey: string): Promise<{ isValid: boolean; er
 
         // 2. Find a model that supports 'generateContent'
         // We prefer standard models if available, but will take any that works.
-        const validModel = models.find((m: any) =>
+        // We prefer standard models if available, but will take any that works.
+        const validModel = models.find((m: { supportedGenerationMethods?: string[], name: string }) =>
             m.supportedGenerationMethods &&
             m.supportedGenerationMethods.includes("generateContent")
         );
@@ -115,7 +116,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const updates: any = {};
+        const updates: Record<string, string | number | null> = {};
 
         // Validate Gemini Key
         if (geminiKey) {
@@ -200,7 +201,7 @@ export async function POST(request: NextRequest) {
         // Update or Insert DB (Upsert)
         // We need email for upsert if creating a new record
         updates.user_id = user.id;
-        updates.email = user.email;
+        updates.email = user.email ?? null;
         updates.updated_at = new Date().toISOString();
 
         const { data: updatedData, error: updateError } = await supabase

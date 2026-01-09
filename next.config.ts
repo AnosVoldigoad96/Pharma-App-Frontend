@@ -4,7 +4,6 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactStrictMode: false, // Disable strict mode to prevent double-mounting issues with workers
   images: {
-    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

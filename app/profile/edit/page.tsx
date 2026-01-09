@@ -102,8 +102,8 @@ export default function EditProfilePage() {
         const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath);
         setFormData((prev) => ({ ...prev, avatar_url: publicUrl }));
       }
-    } catch (error: any) {
-      setError(error.message || "Failed to upload image. Please try again.");
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Failed to upload image. Please try again.");
     } finally {
       setIsUploadingImage(false);
       if (fileInputRef.current) {
@@ -119,6 +119,7 @@ export default function EditProfilePage() {
     setIsSubmitting(true);
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const updates: any = {
         full_name: formData.full_name || null,
         avatar_url: formData.avatar_url || null,
@@ -137,7 +138,7 @@ export default function EditProfilePage() {
       if (updateError) {
         const errorMessage = updateError instanceof Error
           ? updateError.message
-          : (updateError as any)?.message || "Failed to update profile. Please try again.";
+          : (updateError as { message?: string })?.message || "Failed to update profile. Please try again.";
         setError(errorMessage);
       } else {
         setSuccess(true);
@@ -147,9 +148,9 @@ export default function EditProfilePage() {
           router.push("/profile");
         }, 1500);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Unexpected error:", err);
-      setError(err.message || "An unexpected error occurred");
+      setError(err instanceof Error ? err.message : "An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
     }

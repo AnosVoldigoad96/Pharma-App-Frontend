@@ -118,10 +118,10 @@ export default function CommentPage() {
           router.push(`/threads/${slug}`);
         }, 2000);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setSubmitStatus({
         type: "error",
-        message: error.message || "An unexpected error occurred. Please try again.",
+        message: error instanceof Error ? error.message : "An unexpected error occurred. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
@@ -186,11 +186,10 @@ export default function CommentPage() {
           {/* Submit Status */}
           {submitStatus.type && (
             <div
-              className={`p-4 rounded-lg ${
-                submitStatus.type === "success"
-                  ? "bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200"
-                  : "bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200"
-              }`}
+              className={`p-4 rounded-lg ${submitStatus.type === "success"
+                ? "bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200"
+                : "bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200"
+                }`}
             >
               <p className="text-sm">{submitStatus.message}</p>
             </div>
