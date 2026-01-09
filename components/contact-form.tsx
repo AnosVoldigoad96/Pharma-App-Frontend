@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 export function ContactForm() {
   const [formData, setFormData] = useState({
@@ -20,13 +21,41 @@ export function ContactForm() {
     type: "success" | "error" | null;
     message: string;
   }>({ type: null, message: "" });
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
 
+    if (!turnstileToken) {
+      setSubmitStatus({
+        type: "error",
+        message: "Please complete the CAPTCHA",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
+      // Verify Turnstile token
+      const verifyRes = await fetch("/api/verify-turnstile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: turnstileToken }),
+      });
+
+      const verifyData = await verifyRes.json();
+
+      if (!verifyData.success) {
+        setSubmitStatus({
+          type: "error",
+          message: verifyData.message || "CAPTCHA verification failed",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       const { error } = await submitContactForm(
         formData.name,
         formData.email,
@@ -121,15 +150,23 @@ export function ContactForm() {
 
       {submitStatus.type && (
         <div
-          className={`p-4 rounded-md ${
-            submitStatus.type === "success"
+          className={`p-4 rounded-md ${submitStatus.type === "success"
               ? "bg-green-50 dark:bg-green-950 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800"
               : "bg-red-50 dark:bg-red-950 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800"
-          }`}
+            }`}
         >
           {submitStatus.message}
         </div>
       )}
+
+      <div className="mb-4">
+        <Turnstile
+          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+          onSuccess={(token) => setTurnstileToken(token)}
+          onError={() => setSubmitStatus({ type: "error", message: "CAPTCHA error" })}
+          onExpire={() => setTurnstileToken(null)}
+        />
+      </div>
 
       <Button
         type="submit"

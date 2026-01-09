@@ -93,9 +93,16 @@ export function HeroChat() {
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to get response");
-
       const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 403) {
+          setAiAnswer(`⚠️ **Rate Limit Exceeded**\n\n${data.message}`);
+          return;
+        }
+        throw new Error(data.error || "Failed to get response");
+      }
+
       setAiAnswer(data.message);
     } catch (error) {
       console.error("Error:", error);

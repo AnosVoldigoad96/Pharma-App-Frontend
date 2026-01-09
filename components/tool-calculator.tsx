@@ -21,6 +21,7 @@ interface ToolCalculatorProps {
 
 // Component to fetch and display PubChem structure data using API
 function StructureViewer({ cid, smiles }: { cid?: number; smiles?: string }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [structureData, setStructureData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -56,19 +57,21 @@ function StructureViewer({ cid, smiles }: { cid?: number; smiles?: string }) {
         const response = await fetch(
           `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/JSON`
         );
-        
+
         if (!response.ok) {
           throw new Error('Failed to fetch compound data');
         }
 
         const data = await response.json();
         const compound = data.PC_Compounds?.[0];
-        
+
         if (compound) {
           // Extract properties
           const props = compound.props || [];
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const extractedData: any = {};
 
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           props.forEach((prop: any) => {
             const label = prop.urn?.label;
             if (label) {
@@ -115,10 +118,10 @@ function StructureViewer({ cid, smiles }: { cid?: number; smiles?: string }) {
   }, [cid, smiles]);
 
   const smilesString = smiles || structureData?.['Canonical SMILES'] || '';
-  const structure2DUrl = structureImage || (smilesString 
+  const structure2DUrl = structureImage || (smilesString
     ? `https://www.molview.org/smiles/${encodeURIComponent(smilesString)}?width=600&height=400`
     : null);
-  const structure3DUrl = smilesString 
+  const structure3DUrl = smilesString
     ? `https://www.molview.org/smiles/${encodeURIComponent(smilesString)}?width=600&height=500&view=3d`
     : null;
 
@@ -332,30 +335,30 @@ export function ToolCalculator({ tool }: ToolCalculatorProps) {
   // According to TOOLS_IMPLEMENTATION.md, inputs use 'key' as primary identifier
   const parseInputs = (): InputField[] => {
     if (!tool.inputs) return [];
-    
+
     // If it's already an array, normalize it
     if (Array.isArray(tool.inputs)) {
       return (tool.inputs as InputField[]).map((input, index) => {
         // Use 'key' as primary identifier, fallback to 'name', then generate one
         const identifier = input.key || input.name || `input_${index}`;
-        return { 
-          ...input, 
+        return {
+          ...input,
           key: input.key || identifier,
           name: identifier // Use name internally for formData keys
         };
       });
     }
-    
+
     // If it's an object, try to convert it to an array
     if (typeof tool.inputs === 'object') {
       const obj = tool.inputs as Record<string, unknown>;
-      
+
       // Check if it has a 'fields' or 'inputs' property
       if (Array.isArray(obj.fields)) {
         return (obj.fields as InputField[]).map((input, index) => {
           const identifier = input.key || input.name || `field_${index}`;
-          return { 
-            ...input, 
+          return {
+            ...input,
             key: input.key || identifier,
             name: identifier
           };
@@ -364,28 +367,28 @@ export function ToolCalculator({ tool }: ToolCalculatorProps) {
       if (Array.isArray(obj.inputs)) {
         return (obj.inputs as InputField[]).map((input, index) => {
           const identifier = input.key || input.name || `input_${index}`;
-          return { 
-            ...input, 
+          return {
+            ...input,
             key: input.key || identifier,
             name: identifier
           };
         });
       }
-      
+
       // If it's an object with field definitions, convert to array
       return Object.entries(obj).map(([key, config]) => {
         if (typeof config === 'object' && config !== null) {
           const inputConfig = config as Omit<InputField, 'key' | 'name'>;
-          return { 
-            key, 
+          return {
+            key,
             name: key, // Use the object key as both key and name
-            ...inputConfig 
+            ...inputConfig
           } as InputField;
         }
         return { key, name: key, type: 'text', label: key } as InputField;
       });
     }
-    
+
     return [];
   };
 
@@ -399,7 +402,7 @@ export function ToolCalculator({ tool }: ToolCalculatorProps) {
       // Use name (which is set from key or name) as the formData key
       const fieldName = input.name || input.key;
       if (!fieldName) return;
-      
+
       // Initialize fields with default value or empty string
       // Note: Select fields will use empty string but we'll convert to undefined for the component
       if (input.default !== undefined) {
@@ -453,7 +456,7 @@ export function ToolCalculator({ tool }: ToolCalculatorProps) {
           console.warn('Input missing key/name:', input);
           return;
         }
-        
+
         const value = formData[input.name || fieldKey];
         if (value !== undefined && value !== "" && value !== null) {
           // Convert to number if input type is number
@@ -486,11 +489,12 @@ export function ToolCalculator({ tool }: ToolCalculatorProps) {
       if (data) {
         console.log('Tool response data:', data);
         // Handle both 'steps' (camelCase) and 'calculation_steps' (snake_case) from Edge Functions
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const responseData = data as any;
         const steps = responseData.steps || responseData.calculation_steps;
         console.log('Steps in response:', steps);
         console.log('Interpretation:', responseData.interpretation);
-        
+
         // Normalize the response to use 'steps' consistently
         // Support both string[] (simple) and object[] (detailed) formats
         const normalizedData: ToolResult = {
@@ -500,7 +504,7 @@ export function ToolCalculator({ tool }: ToolCalculatorProps) {
           interpretation: responseData.interpretation || undefined,
           ranges: responseData.ranges || responseData.reference_ranges || undefined,
         };
-        
+
         setResult(normalizedData);
       } else {
         throw new Error("No data returned from tool");
@@ -525,11 +529,11 @@ export function ToolCalculator({ tool }: ToolCalculatorProps) {
       console.error('Input missing name/key property:', input);
       return <div className="text-destructive">Error: Input missing name/key property</div>;
     }
-    
+
     // Get value - ensure it's always a string for controlled inputs
     const rawValue = formData[fieldName];
     const value = rawValue !== undefined && rawValue !== null ? String(rawValue) : "";
-    
+
     const hasError = error && (value === "" || formData[fieldName] === undefined) && input.required;
 
     switch (input.type) {
@@ -663,13 +667,12 @@ export function ToolCalculator({ tool }: ToolCalculatorProps) {
         {/* Result - Handle ToolResult format with status, message, html, structures, steps */}
         {result && (
           <div
-            className={`p-6 rounded-lg border ${
-              result.status === 'ERROR'
+            className={`p-6 rounded-lg border ${result.status === 'ERROR'
                 ? 'bg-destructive/10 border-destructive/20 text-destructive'
                 : result.status === 'WARNING'
-                ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-700 dark:text-yellow-400'
-                : 'bg-primary/10 border-primary/20 text-primary'
-            }`}
+                  ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-700 dark:text-yellow-400'
+                  : 'bg-primary/10 border-primary/20 text-primary'
+              }`}
           >
             {/* Status Icon */}
             <div className="flex items-center gap-2 mb-3">
@@ -690,90 +693,90 @@ export function ToolCalculator({ tool }: ToolCalculatorProps) {
             {/* Calculation Steps (if provided) - Support both string[] and object[] */}
             {((result.steps && Array.isArray(result.steps) && result.steps.length > 0) ||
               (result.calculation_steps && Array.isArray(result.calculation_steps) && result.calculation_steps.length > 0)) && (
-              <div className="mb-4">
-                <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 text-primary text-xs font-bold">
-                    =
-                  </span>
-                  Calculation Steps
-                </h4>
-                <div className="space-y-3">
-                  {(result.steps || result.calculation_steps || []).map((step, index) => {
-                    // Handle simple string format (per TOOLS_IMPLEMENTATION.md)
-                    if (typeof step === 'string') {
-                      return (
-                        <div
-                          key={index}
-                          className="p-3 bg-muted/50 rounded-md border-l-4 border-primary/50"
-                        >
-                          <div className="flex items-start gap-3">
-                            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex-shrink-0 mt-0.5">
-                              {index + 1}
-                            </span>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium">{step}</p>
+                <div className="mb-4">
+                  <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 text-primary text-xs font-bold">
+                      =
+                    </span>
+                    Calculation Steps
+                  </h4>
+                  <div className="space-y-3">
+                    {(result.steps || result.calculation_steps || []).map((step, index) => {
+                      // Handle simple string format (per TOOLS_IMPLEMENTATION.md)
+                      if (typeof step === 'string') {
+                        return (
+                          <div
+                            key={index}
+                            className="p-3 bg-muted/50 rounded-md border-l-4 border-primary/50"
+                          >
+                            <div className="flex items-start gap-3">
+                              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex-shrink-0 mt-0.5">
+                                {index + 1}
+                              </span>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium">{step}</p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    }
-                    
-                    // Handle detailed object format
-                    if (typeof step === 'object' && step !== null) {
-                      const stepObj = step as {
-                        step?: number;
-                        description?: string;
-                        formula?: string;
-                        value?: string | number;
-                        unit?: string;
-                      };
-                      
-                      // Skip if no meaningful content
-                      if (!stepObj.description && !stepObj.formula && stepObj.value === undefined) {
-                        return null;
+                        );
                       }
-                      
-                      return (
-                        <div
-                          key={index}
-                          className="p-3 bg-muted/50 rounded-md border-l-4 border-primary/50"
-                        >
-                          <div className="flex items-start gap-3">
-                            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex-shrink-0 mt-0.5">
-                              {stepObj.step !== undefined && stepObj.step !== null ? stepObj.step : index + 1}
-                            </span>
-                            <div className="flex-1 min-w-0">
-                              {stepObj.description && (
-                                <p className="text-sm font-medium mb-1">{stepObj.description}</p>
-                              )}
-                              {stepObj.formula && (
-                                <div className="mt-2 p-2 bg-background rounded border font-mono text-xs break-all">
-                                  {stepObj.formula}
-                                </div>
-                              )}
-                              {stepObj.value !== undefined && stepObj.value !== null && (
-                                <div className="mt-2 flex items-baseline gap-2">
-                                  <span className="text-lg font-semibold text-primary">
-                                    {stepObj.value}
-                                  </span>
-                                  {stepObj.unit && (
-                                    <span className="text-sm text-muted-foreground">
-                                      {stepObj.unit}
+
+                      // Handle detailed object format
+                      if (typeof step === 'object' && step !== null) {
+                        const stepObj = step as {
+                          step?: number;
+                          description?: string;
+                          formula?: string;
+                          value?: string | number;
+                          unit?: string;
+                        };
+
+                        // Skip if no meaningful content
+                        if (!stepObj.description && !stepObj.formula && stepObj.value === undefined) {
+                          return null;
+                        }
+
+                        return (
+                          <div
+                            key={index}
+                            className="p-3 bg-muted/50 rounded-md border-l-4 border-primary/50"
+                          >
+                            <div className="flex items-start gap-3">
+                              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex-shrink-0 mt-0.5">
+                                {stepObj.step !== undefined && stepObj.step !== null ? stepObj.step : index + 1}
+                              </span>
+                              <div className="flex-1 min-w-0">
+                                {stepObj.description && (
+                                  <p className="text-sm font-medium mb-1">{stepObj.description}</p>
+                                )}
+                                {stepObj.formula && (
+                                  <div className="mt-2 p-2 bg-background rounded border font-mono text-xs break-all">
+                                    {stepObj.formula}
+                                  </div>
+                                )}
+                                {stepObj.value !== undefined && stepObj.value !== null && (
+                                  <div className="mt-2 flex items-baseline gap-2">
+                                    <span className="text-lg font-semibold text-primary">
+                                      {stepObj.value}
                                     </span>
-                                  )}
-                                </div>
-                              )}
+                                    {stepObj.unit && (
+                                      <span className="text-sm text-muted-foreground">
+                                        {stepObj.unit}
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    }
-                    
-                    return null;
-                  })}
+                        );
+                      }
+
+                      return null;
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Interpretation (if provided) */}
             {result.interpretation && (
@@ -787,7 +790,7 @@ export function ToolCalculator({ tool }: ToolCalculatorProps) {
                 <p className="text-sm text-muted-foreground leading-relaxed mb-3">
                   {result.interpretation}
                 </p>
-                
+
                 {/* Reference Ranges (if provided) */}
                 {result.ranges && Array.isArray(result.ranges) && result.ranges.length > 0 && (
                   <div className="mt-3 pt-3 border-t border-border">
@@ -820,7 +823,7 @@ export function ToolCalculator({ tool }: ToolCalculatorProps) {
                 )}
               </div>
             )}
-            
+
             {/* Ranges without interpretation (if only ranges are provided) */}
             {!result.interpretation && result.ranges && Array.isArray(result.ranges) && result.ranges.length > 0 && (
               <div className="mb-4 p-4 bg-muted/30 rounded-md border border-border">
@@ -874,7 +877,7 @@ export function ToolCalculator({ tool }: ToolCalculatorProps) {
                       Compound Overview
                     </h2>
                   </div>
-                  
+
                   <div className="space-y-4">
                     {/* PubChem CID - Featured Card */}
                     <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 p-5 rounded-lg border border-primary/30 shadow-sm hover:shadow-md transition-shadow">

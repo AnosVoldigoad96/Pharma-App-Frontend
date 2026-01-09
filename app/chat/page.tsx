@@ -108,9 +108,21 @@ export default function ChatPage() {
                 body: JSON.stringify({ messages: messageHistory, botId: chatbot.id }),
             });
 
-            if (!response.ok) throw new Error("Failed to get response");
-
             const data = await response.json();
+
+            if (!response.ok) {
+                if (response.status === 403) {
+                    const rateLimitMsg: ChatMessage = {
+                        role: "assistant",
+                        content: `⚠️ **Rate Limit Exceeded**\n\n${data.message}`,
+                        id: `error-${Date.now()}`,
+                    };
+                    setMessages(prev => [...prev, rateLimitMsg]);
+                    return;
+                }
+                throw new Error(data.error || "Failed to get response");
+            }
+
             const aiResponse: ChatMessage = {
                 role: "assistant",
                 content: data.message,
@@ -188,8 +200,8 @@ export default function ChatPage() {
                             )}
                             <div
                                 className={`rounded-lg px-4 py-3 max-w-[80%] ${message.role === "user"
-                                        ? "bg-primary text-primary-foreground"
-                                        : "bg-muted"
+                                    ? "bg-primary text-primary-foreground"
+                                    : "bg-muted"
                                     }`}
                             >
                                 {message.role === "user" ? (

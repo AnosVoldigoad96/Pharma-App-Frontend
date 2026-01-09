@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { ProfileHero } from "@/components/profile-hero";
+import { APIKeySettings } from "@/components/profile/api-key-settings";
 
 export default function ProfilePage() {
   const { user, profile, loading } = useAuth();
@@ -112,6 +113,9 @@ export default function ProfilePage() {
               </Link>
             </div>
           </div>
+
+          {/* API Key Settings */}
+          <APIKeySettings />
         </div>
       </div>
     </div>

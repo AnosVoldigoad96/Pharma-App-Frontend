@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Wrench, Loader2, CheckCircle2 } from "lucide-react";
+import { Turnstile } from "@marsidev/react-turnstile";
 import Link from "next/link";
 
 export function ToolRequestSection() {
@@ -17,6 +18,7 @@ export function ToolRequestSection() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState("");
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,7 +32,28 @@ export function ToolRequestSection() {
         setIsSubmitting(true);
         setError("");
 
+        if (!turnstileToken) {
+            setError("Please complete the CAPTCHA");
+            setIsSubmitting(false);
+            return;
+        }
+
         try {
+            // Verify Turnstile token
+            const verifyRes = await fetch("/api/verify-turnstile", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ token: turnstileToken }),
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (!verifyData.success) {
+                setError(verifyData.message || "CAPTCHA verification failed");
+                setIsSubmitting(false);
+                return;
+            }
+
             const supabase = createClient();
             const { error: submitError } = await supabase
                 .from("requests")
@@ -126,6 +149,15 @@ export function ToolRequestSection() {
                                             {error}
                                         </div>
                                     )}
+
+                                    <div className="mb-4">
+                                        <Turnstile
+                                            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+                                            onSuccess={(token) => setTurnstileToken(token)}
+                                            onError={() => setError("CAPTCHA error")}
+                                            onExpire={() => setTurnstileToken(null)}
+                                        />
+                                    </div>
 
                                     <Button
                                         type="submit"

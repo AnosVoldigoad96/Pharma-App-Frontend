@@ -80,18 +80,51 @@ export function PharmaAIChat({ botId, initialMessage, isEmbedded = false }: Phar
         if (!chatbot) return;
         setIsLoading(true);
         try {
+            // Create the new message object
+            const newUserMessage = { role: "user" as const, content: message };
+
+            // Prepare the messages array to send (history + new message)
+            // We need to map our internal message format to what the API expects
+            const messagesToSend = [...messages, newUserMessage].map(msg => ({
+                role: msg.role,
+                content: msg.content
+            }));
+
+            // Get the session token
+            const supabase = createClient();
+            const { data: { session } } = await supabase.auth.getSession();
+            const token = session?.access_token;
+
+            const headers: Record<string, string> = {
+                "Content-Type": "application/json"
+            };
+
+            if (token) {
+                headers["Authorization"] = `Bearer ${token}`;
+            }
+
             const response = await fetch("/api/chat", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers,
                 body: JSON.stringify({
-                    messages: [{ role: "user", content: message }],
+                    messages: messagesToSend,
                     botId: chatbot.id
                 }),
             });
 
-            if (!response.ok) throw new Error("Failed to get response");
-
             const data = await response.json();
+
+            if (!response.ok) {
+                if (response.status === 403) {
+                    setMessages(prev => [...prev, {
+                        role: 'assistant',
+                        content: `⚠️ **Rate Limit Exceeded**\n\n${data.message}`
+                    }]);
+                    return;
+                }
+                throw new Error(data.error || "Failed to get response");
+            }
+
             setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
         } catch (error) {
             console.error("Error:", error);

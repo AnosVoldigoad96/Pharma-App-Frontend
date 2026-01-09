@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react";
+import { Turnstile } from "@marsidev/react-turnstile";
 import Lanyard from "@/components/Lanyard";
 
 import { AuthHeroBackground } from "@/components/auth-hero-background";
@@ -30,6 +31,7 @@ export function SignUpForm({ settings }: SignUpFormProps) {
     confirmPassword: "",
     fullName: "",
   });
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -52,7 +54,28 @@ export function SignUpForm({ settings }: SignUpFormProps) {
 
     setIsSubmitting(true);
 
+    if (!turnstileToken) {
+      setError("Please complete the CAPTCHA");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
+      // Verify Turnstile token
+      const verifyRes = await fetch("/api/verify-turnstile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: turnstileToken }),
+      });
+
+      const verifyData = await verifyRes.json();
+
+      if (!verifyData.success) {
+        setError(verifyData.message || "CAPTCHA verification failed");
+        setIsSubmitting(false);
+        return;
+      }
+
       const { user, error: signUpError } = await signUp(
         formData.email,
         formData.password,
@@ -195,6 +218,15 @@ export function SignUpForm({ settings }: SignUpFormProps) {
                 minLength={6}
               />
             </LabelInputContainer>
+
+            <div className="mb-4">
+              <Turnstile
+                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+                onSuccess={(token) => setTurnstileToken(token)}
+                onError={() => setError("CAPTCHA error")}
+                onExpire={() => setTurnstileToken(null)}
+              />
+            </div>
 
             <button
               className="group/btn relative block h-10 w-full rounded-md bg-gradient-to-br from-black to-neutral-600 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_#27272a_inset,0px_-1px_0px_0px_#27272a_inset]"

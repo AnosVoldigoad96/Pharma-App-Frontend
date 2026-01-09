@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 interface CommentFormProps {
   threadId: string;
@@ -21,6 +22,7 @@ export function CommentForm({ threadId, threadSlug, isLocked, onCommentAdded }: 
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   if (!user) {
     return (
@@ -58,7 +60,28 @@ export function CommentForm({ threadId, threadSlug, isLocked, onCommentAdded }: 
     setIsSubmitting(true);
     setError(null);
 
+    if (!turnstileToken) {
+      setError("Please complete the CAPTCHA");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
+      // Verify Turnstile token
+      const verifyRes = await fetch("/api/verify-turnstile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: turnstileToken }),
+      });
+
+      const verifyData = await verifyRes.json();
+
+      if (!verifyData.success) {
+        setError(verifyData.message || "CAPTCHA verification failed");
+        setIsSubmitting(false);
+        return;
+      }
+
       const supabase = createClient();
 
       const commentData = {
@@ -72,7 +95,7 @@ export function CommentForm({ threadId, threadSlug, isLocked, onCommentAdded }: 
 
       const { error: insertError } = await supabase
         .from("comments")
-        .insert([commentData] as any);
+        .insert([commentData]);
 
       if (insertError) {
         setError(insertError.message || "Failed to submit comment. Please try again.");
@@ -86,8 +109,8 @@ export function CommentForm({ threadId, threadSlug, isLocked, onCommentAdded }: 
           router.refresh();
         }
       }
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred. Please try again.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -110,6 +133,15 @@ export function CommentForm({ threadId, threadSlug, isLocked, onCommentAdded }: 
         </div>
       )}
 
+      <div className="mb-2">
+        <Turnstile
+          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+          onSuccess={(token) => setTurnstileToken(token)}
+          onError={() => setError("CAPTCHA error")}
+          onExpire={() => setTurnstileToken(null)}
+        />
+      </div>
+
       <div className="flex items-center justify-end gap-2">
         {content && (
           <Button
@@ -126,8 +158,8 @@ export function CommentForm({ threadId, threadSlug, isLocked, onCommentAdded }: 
             Cancel
           </Button>
         )}
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           disabled={isSubmitting || !content.trim()}
           size="sm"
           className="text-xs"

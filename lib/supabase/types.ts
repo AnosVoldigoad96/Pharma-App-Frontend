@@ -130,6 +130,9 @@ export type PublicUser = {
   is_banned: boolean
   ban_expires_at: string | null
   ban_reason: string | null
+  gemini_key_encrypted?: string | null
+  groq_key_encrypted?: string | null
+  iv?: string | null
 }
 
 export type Request = {

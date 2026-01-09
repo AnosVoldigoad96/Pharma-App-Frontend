@@ -12,6 +12,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { ThreadCreationHero } from "@/components/thread-creation-hero";
 import { ThreadFacts } from "@/components/thread-facts";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 function generateSlug(title: string): string {
   return title
@@ -30,6 +31,7 @@ export default function NewThreadPage() {
     type: "success" | "error" | null;
     message: string;
   }>({ type: null, message: "" });
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -65,7 +67,34 @@ export default function NewThreadPage() {
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
 
+    if (!turnstileToken) {
+      setSubmitStatus({
+        type: "error",
+        message: "Please complete the CAPTCHA",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
+      // Verify Turnstile token
+      const verifyRes = await fetch("/api/verify-turnstile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: turnstileToken }),
+      });
+
+      const verifyData = await verifyRes.json();
+
+      if (!verifyData.success) {
+        setSubmitStatus({
+          type: "error",
+          message: verifyData.message || "CAPTCHA verification failed",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       const supabase = createClient();
 
       // Generate slug from title
@@ -95,7 +124,7 @@ export default function NewThreadPage() {
 
       const { data, error } = await supabase
         .from("threads")
-        .insert([threadData] as any)
+        .insert([threadData])
         .select()
         .single();
 
@@ -122,10 +151,10 @@ export default function NewThreadPage() {
           router.push("/threads");
         }, 2000);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setSubmitStatus({
         type: "error",
-        message: error.message || "An unexpected error occurred. Please try again.",
+        message: error instanceof Error ? error.message : "An unexpected error occurred. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
@@ -234,6 +263,16 @@ export default function NewThreadPage() {
                   <p className="text-sm">{submitStatus.message}</p>
                 </div>
               )}
+
+              {/* Turnstile */}
+              <div className="mb-4">
+                <Turnstile
+                  siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+                  onSuccess={(token) => setTurnstileToken(token)}
+                  onError={() => setSubmitStatus({ type: "error", message: "CAPTCHA error" })}
+                  onExpire={() => setTurnstileToken(null)}
+                />
+              </div>
 
               {/* Submit Button */}
               <div className="flex items-center gap-4 pt-6 border-t">

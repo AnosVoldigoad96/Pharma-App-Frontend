@@ -12,6 +12,7 @@ import { RichTextEditor } from "@/components/rich-text-editor";
 import Image from "next/image";
 import { BlogCreationHero } from "@/components/blog-creation-hero";
 import { BloggingFacts } from "@/components/blogging-facts";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 export default function WriteBlogPage() {
   const { user, profile, loading } = useAuth();
@@ -24,6 +25,7 @@ export default function WriteBlogPage() {
     type: "success" | "error" | null;
     message: string;
   }>({ type: null, message: "" });
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -122,10 +124,10 @@ export default function WriteBlogPage() {
         type: "success",
         message: "Cover image uploaded successfully!",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       setSubmitStatus({
         type: "error",
-        message: error.message || "Failed to upload image. Please try again.",
+        message: error instanceof Error ? error.message : "Failed to upload image. Please try again.",
       });
     } finally {
       setIsUploadingImage(false);
@@ -147,6 +149,15 @@ export default function WriteBlogPage() {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
+
+    if (!turnstileToken) {
+      setSubmitStatus({
+        type: "error",
+        message: "Please complete the CAPTCHA",
+      });
+      setIsSubmitting(false);
+      return;
+    }
 
     if (!user || !profile) {
       setSubmitStatus({
@@ -176,6 +187,24 @@ export default function WriteBlogPage() {
     }
 
     try {
+      // Verify Turnstile token
+      const verifyRes = await fetch("/api/verify-turnstile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: turnstileToken }),
+      });
+
+      const verifyData = await verifyRes.json();
+
+      if (!verifyData.success) {
+        setSubmitStatus({
+          type: "error",
+          message: verifyData.message || "CAPTCHA verification failed",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       const supabase = createClient();
 
       // Append brand name to title
@@ -205,7 +234,7 @@ export default function WriteBlogPage() {
 
       const { data, error } = await supabase
         .from("blogs")
-        .insert([blogData] as any)
+        .insert([blogData])
         .select()
         .single();
 
@@ -224,10 +253,10 @@ export default function WriteBlogPage() {
           router.push("/blogs");
         }, 2000);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setSubmitStatus({
         type: "error",
-        message: error.message || "An unexpected error occurred. Please try again.",
+        message: error instanceof Error ? error.message : "An unexpected error occurred. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
@@ -265,8 +294,8 @@ export default function WriteBlogPage() {
             {submitStatus.type && (
               <div
                 className={`mb-6 p-4 rounded-md border ${submitStatus.type === "success"
-                    ? "bg-green-50 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800"
-                    : "bg-red-50 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800"
+                  ? "bg-green-50 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800"
+                  : "bg-red-50 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800"
                   }`}
               >
                 {submitStatus.message}
@@ -385,6 +414,16 @@ export default function WriteBlogPage() {
                   content={formData.content}
                   onChange={(content) => setFormData({ ...formData, content })}
                   placeholder="Write your blog post content here..."
+                />
+              </div>
+
+              {/* Turnstile */}
+              <div className="mb-4">
+                <Turnstile
+                  siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+                  onSuccess={(token) => setTurnstileToken(token)}
+                  onError={() => setSubmitStatus({ type: "error", message: "CAPTCHA error" })}
+                  onExpire={() => setTurnstileToken(null)}
                 />
               </div>
 

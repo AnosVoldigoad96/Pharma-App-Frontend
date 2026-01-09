@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { decrypt } from "@/lib/crypto";
 
 // Create Supabase client for server-side API routes
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -9,21 +10,22 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 // Initialize Google AI
-const getGoogleAI = () => {
-  const apiKey = process.env.GOOGLE_AI_API_KEY;
-  if (!apiKey) {
-    throw new Error("GOOGLE_AI_API_KEY is not configured");
+const getGoogleAI = (apiKey?: string) => {
+  const key = apiKey || process.env.GOOGLE_AI_API_KEY;
+  if (!key) {
+    throw new Error("Google AI API key is not configured");
   }
-  return new GoogleGenerativeAI(apiKey);
+  return new GoogleGenerativeAI(key);
 };
 
 // Google AI Studio (Gemini/Gemma) API
 async function callGoogleAI(
   modelName: string,
   messages: Array<{ role: string; content: string }>,
-  systemPrompt: string
+  systemPrompt: string,
+  apiKey?: string
 ) {
-  const genAI = getGoogleAI();
+  const genAI = getGoogleAI(apiKey);
   const model = genAI.getGenerativeModel({ model: modelName });
 
   // Format messages for Gemini API
@@ -72,11 +74,12 @@ async function callGoogleAI(
 async function callGroq(
   modelName: string,
   messages: Array<{ role: string; content: string }>,
-  systemPrompt: string
+  systemPrompt: string,
+  userApiKey?: string
 ) {
-  const apiKey = process.env.GROQ_API_KEY;
+  const apiKey = userApiKey || process.env.GROQ_API_KEY;
   if (!apiKey) {
-    throw new Error("GROQ_API_KEY is not configured");
+    throw new Error("Groq API key is not configured");
   }
 
   // Format messages for Groq API
@@ -109,8 +112,8 @@ async function callGroq(
 
 // Get embedding from Google's text-embedding-004 model
 // Matches CMS implementation exactly
-async function getEmbedding(text: string): Promise<number[]> {
-  const genAI = getGoogleAI();
+async function getEmbedding(text: string, apiKey?: string): Promise<number[]> {
+  const genAI = getGoogleAI(apiKey);
   const embeddingModel = genAI.getGenerativeModel({ model: "text-embedding-004" });
 
   try {
@@ -125,7 +128,8 @@ async function getEmbedding(text: string): Promise<number[]> {
 // RAG: Retrieve relevant knowledge from book_knowledge table
 async function retrieveRelevantKnowledge(
   bookId: string,
-  queryEmbedding: number[]
+  queryEmbedding: number[],
+  supabaseClient: any
 ) {
   try {
     // Use Supabase's vector similarity search (pgvector)
@@ -133,7 +137,7 @@ async function retrieveRelevantKnowledge(
     console.log(`   → Calling match_book_content RPC function...`);
     console.log(`   → Parameters: book_id=${bookId}, threshold=0.4, count=4`);
 
-    const { data, error } = await supabase.rpc("match_book_content", {
+    const { data, error } = await supabaseClient.rpc("match_book_content", {
       query_embedding: queryEmbedding,
       target_book_id: bookId,
       match_threshold: 0.4,
@@ -145,7 +149,7 @@ async function retrieveRelevantKnowledge(
       console.log("   → Falling back to simple book_id query...");
 
       // Fallback: Get knowledge by book_id without vector search
-      const { data: fallbackData, error: fallbackError } = await supabase
+      const { data: fallbackData, error: fallbackError } = await supabaseClient
         .from("book_knowledge")
         .select("content")
         .eq("book_id", bookId)
@@ -156,7 +160,7 @@ async function retrieveRelevantKnowledge(
         return "";
       }
 
-      const fallbackResult = fallbackData?.map((item) => item.content).filter(Boolean).join("\n\n") || "";
+      const fallbackResult = fallbackData?.map((item: any) => item.content).filter(Boolean).join("\n\n") || "";
       console.log(`   ✓ Fallback retrieved ${fallbackData?.length || 0} chunks`);
       return fallbackResult;
     }
@@ -176,13 +180,13 @@ async function retrieveRelevantKnowledge(
     console.log("   → Falling back to simple book_id query...");
 
     // Fallback: Get knowledge by book_id without vector search
-    const { data: fallbackData } = await supabase
+    const { data: fallbackData } = await supabaseClient
       .from("book_knowledge")
       .select("content")
       .eq("book_id", bookId)
       .limit(4);
 
-    const fallbackResult = fallbackData?.map((item) => item.content).filter(Boolean).join("\n\n") || "";
+    const fallbackResult = fallbackData?.map((item: any) => item.content).filter(Boolean).join("\n\n") || "";
     console.log(`   ✓ Fallback retrieved ${fallbackData?.length || 0} chunks`);
     return fallbackResult;
   }
@@ -190,6 +194,55 @@ async function retrieveRelevantKnowledge(
 
 export async function POST(request: NextRequest) {
   try {
+    // Authenticate user
+    const authHeader = request.headers.get('Authorization');
+    let user = null;
+    let userKeys = { gemini: "", groq: "" };
+
+    // Default to global client (service role) for all operations
+    // This ensures we can bypass RLS to read the user's keys once authenticated
+    let supabaseClient = supabase;
+
+    if (authHeader) {
+      const token = authHeader.replace('Bearer ', '');
+
+      // Verify user using the Service Role client
+      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser(token);
+
+      if (authError) {
+        console.error("[Debug] Auth error in chat API:", authError);
+      }
+
+      if (!authError && authUser) {
+        user = authUser;
+
+        // Fetch user keys using the Service Role client (bypasses RLS)
+        // We verified the user via token, so this is safe.
+        const { data: profile, error: profileError } = await supabaseClient
+          .from('public_users')
+          .select('gemini_key_encrypted, groq_key_encrypted, iv')
+          .eq('user_id', user.id)
+          .single();
+
+        if (profileError) {
+          console.error("Error fetching user profile:", profileError);
+        }
+
+        if (profile && profile.iv) {
+          try {
+            if (profile.gemini_key_encrypted) {
+              userKeys.gemini = decrypt(profile.gemini_key_encrypted, profile.iv);
+            }
+            if (profile.groq_key_encrypted) {
+              userKeys.groq = decrypt(profile.groq_key_encrypted, profile.iv);
+            }
+          } catch (e) {
+            console.error("Failed to decrypt user keys:", e);
+          }
+        }
+      }
+    }
+
     const body = await request.json();
     // Match CMS implementation: accepts messages (array) and botId
     const { messages, botId } = body;
@@ -222,6 +275,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Determine which key to use
+    const modelName = chatbot.model_name;
+    const isGroq = modelName.includes("llama") || modelName.includes("mixtral") || modelName.includes("groq");
+    const userHasKey = isGroq ? !!userKeys.groq : !!userKeys.gemini;
+
+    // Rate Limiting Logic
+    if (!userHasKey) {
+      // Count model messages in history
+      const modelMessageCount = messages.filter((msg: any) => msg.role === "model" || msg.role === "assistant").length;
+
+      // Limit to 2 responses per session (so if they already have 2, they can't get a 3rd)
+      // Note: We use 3 because the welcome message counts as 1 assistant message.
+      // So: Welcome (1) + Response 1 (2) + Response 2 (3) -> Next one blocked.
+      if (modelMessageCount >= 3) {
+        return NextResponse.json(
+          {
+            error: "Rate limit exceeded",
+            message: "You have reached the free limit for this session. Please add your own API key in Profile settings to continue."
+          },
+          { status: 403 }
+        );
+      }
+    }
+
     // Get the last user message for RAG
     const userMessages = messages.filter((msg: any) => msg.role === "user");
     const lastUserMessage = userMessages[userMessages.length - 1]?.content || "";
@@ -238,6 +315,7 @@ export async function POST(request: NextRequest) {
     console.log(`Messages in context: ${messages.length}`);
     console.log(`Estimated tokens: ~${estimatedTokens} (${totalChars} characters)`);
     console.log(`User Message: ${lastUserMessage.substring(0, 100)}...`);
+    console.log(`Using User Key: ${userHasKey ? "Yes" : "No"}`);
 
     // Step 1: RAG Process (if linked_book_id is present)
     let relevantKnowledge = "";
@@ -248,14 +326,19 @@ export async function POST(request: NextRequest) {
       try {
         // Embed the user's query
         console.log("1. Generating embedding for user query...");
-        const queryEmbedding = await getEmbedding(lastUserMessage);
+        // Use user key for embedding if available (only if it's a Gemini key, as embedding uses Google AI)
+        // Actually, embedding model is "text-embedding-004" which is Google. 
+        // So we should use Gemini key if available.
+        const embeddingKey = userKeys.gemini || undefined;
+        const queryEmbedding = await getEmbedding(lastUserMessage, embeddingKey);
         console.log(`   ✓ Embedding generated (dimensions: ${queryEmbedding.length})`);
 
         // Retrieve relevant knowledge using RAG
         console.log("2. Searching for relevant knowledge chunks...");
         relevantKnowledge = await retrieveRelevantKnowledge(
           chatbot.linked_book_id,
-          queryEmbedding
+          queryEmbedding,
+          supabaseClient
         );
 
         if (relevantKnowledge) {
@@ -302,28 +385,27 @@ export async function POST(request: NextRequest) {
       }));
 
     // Step 4: Determine which API to use based on model_name
-    const modelName = chatbot.model_name;
     let aiResponse: string;
 
     console.log("4. Calling AI model...");
     // Check if it's a Llama variant (Groq)
-    if (modelName.includes("llama") || modelName.includes("mixtral") || modelName.includes("groq")) {
+    if (isGroq) {
       // Use Groq API
       console.log(`   → Using Groq API (${modelName})`);
-      aiResponse = await callGroq(modelName, formattedMessages, enhancedSystemPrompt);
+      aiResponse = await callGroq(modelName, formattedMessages, enhancedSystemPrompt, userKeys.groq);
     } else {
       // Default to Google AI Studio (Gemini)
       console.log(`   → Using Google AI Studio (${modelName})`);
-      aiResponse = await callGoogleAI(modelName, formattedMessages, enhancedSystemPrompt);
+      aiResponse = await callGoogleAI(modelName, formattedMessages, enhancedSystemPrompt, userKeys.gemini);
     }
     console.log(`   ✓ Response received (${aiResponse.length} characters)`);
 
     // Step 5: Return response with debug information (matching CMS format)
-    console.log("\n=== RESPONSE SUMMARY ===");
-    console.log(`Model: ${modelName}`);
-    console.log(`RAG Used: ${usedRAG ? "✓ Yes" : "✗ No"}`);
-    console.log(`Response Length: ${aiResponse.length} characters`);
-    console.log("=======================\n");
+    // console.log("\n=== RESPONSE SUMMARY ===");
+    // console.log(`Model: ${modelName}`);
+    // console.log(`RAG Used: ${usedRAG ? "✓ Yes" : "✗ No"}`);
+    // console.log(`Response Length: ${aiResponse.length} characters`);
+    // console.log("=======================\n");
 
     return NextResponse.json({
       message: aiResponse,
