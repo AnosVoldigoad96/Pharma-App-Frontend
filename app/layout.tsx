@@ -18,6 +18,17 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "ePharmatica - Pharmaceutical Knowledge Platform",
   description: "Your comprehensive pharmaceutical knowledge platform with books, articles, and community discussions",
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png' },
+    ],
+  },
+  manifest: "/site.webmanifest",
 };
 
 export default async function RootLayout({
