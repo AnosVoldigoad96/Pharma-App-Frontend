@@ -31,7 +31,6 @@ export function Footer({ siteSettings }: FooterProps) {
     { name: "Library", link: "/books" },
     { name: "Tools", link: "/tools" },
     { name: "Blogs", link: "/blogs" },
-    { name: "Forums", link: "/threads" },
     { name: "About", link: "/about" },
     { name: "Contact", link: "/contact" },
   ];
@@ -64,7 +63,7 @@ export function Footer({ siteSettings }: FooterProps) {
                   />
                 </div>
               )}
-              <h3 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+              <h3 className="text-2xl font-bold text-[#76c7a6]">
                 {brandName}
               </h3>
             </div>

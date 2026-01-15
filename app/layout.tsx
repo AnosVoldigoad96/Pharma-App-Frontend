@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "./globals.css";
 import "./hero-animations.css";
 import { AuthProvider } from "@/contexts/auth-context";
@@ -9,8 +9,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { AudioChatWidget } from "@/components/audio-chat-widget";
 
-const inter = Inter({
+const roboto = Roboto({
   subsets: ["latin"],
+  weight: ["100", "300", "400", "500", "700", "900"],
   variable: "--font-sans",
   display: "swap",
 });
@@ -45,7 +46,7 @@ export default async function RootLayout({
         <meta name="referrer" content="no-referrer-when-downgrade" />
       </head>
       <body
-        className={`${inter.variable} font-sans antialiased`}
+        className={`${roboto.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
         <ThemeProvider

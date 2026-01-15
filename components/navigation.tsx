@@ -30,7 +30,6 @@ const navItems = [
   { label: "Library", href: "/books" },
   { label: "Tools", href: "/tools" },
   { label: "Blogs", href: "/blogs" },
-  { label: "Forums", href: "/threads" },
   { label: "About", href: "/about" },
 ];
 
@@ -158,7 +157,7 @@ export function Navigation({ brandName, brandLogo }: NavigationProps) {
         />
       )}
       <span
-        className={`font-bold text-lg hidden sm:block transition-all duration-300 ${visible ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100"
+        className={`font-bold text-2xl hidden sm:block transition-all duration-300 text-[#76c7a6] ${visible ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100"
           }`}
       >
         {brandName}
@@ -172,6 +171,7 @@ export function Navigation({ brandName, brandLogo }: NavigationProps) {
         <Logo />
         <NavItems
           items={navItems.map((item) => ({ name: item.label, link: item.href }))}
+          activePath={pathname}
         />
         {rightElement}
       </NavBody>
@@ -189,16 +189,22 @@ export function Navigation({ brandName, brandLogo }: NavigationProps) {
           onClose={() => setIsMobileMenuOpen(false)}
         >
           <div className="grid grid-cols-3 gap-2 w-full">
-            {navItems.map((item, idx) => (
-              <Link
-                key={idx}
-                href={item.href}
-                className="flex items-center justify-center px-2 py-2 text-sm font-medium hover:bg-muted rounded-md transition-colors text-center border border-border/50"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item, idx) => {
+              const isActive = pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
+              return (
+                <Link
+                  key={idx}
+                  href={item.href}
+                  className={`flex items-center justify-center px-2 py-2 text-sm font-bold rounded-md transition-colors text-center border relative overflow-hidden ${isActive
+                    ? "text-foreground border-[#76c7a6]/50 bg-[#76c7a6]/10"
+                    : "hover:bg-muted text-foreground border-border/50"
+                    }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </div>
           {mobileBottomElement}
         </MobileNavMenu>

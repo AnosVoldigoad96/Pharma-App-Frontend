@@ -101,7 +101,7 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
       }}
       className={cn(
         "relative z-[60] mx-auto hidden flex-row items-center justify-between self-start px-4 py-2 lg:flex",
-        !visible && "w-full bg-white/10 dark:bg-black/10 backdrop-blur-md border-b border-white/20",
+        !visible && "w-full bg-white/25 dark:bg-black/25 backdrop-blur-md border-b border-white/20",
         visible && "bg-background/95 backdrop-blur-sm border border-border",
         className,
       )}
@@ -122,34 +122,49 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
   );
 };
 
-export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
+export const NavItems = ({ items, className, onItemClick, activePath }: NavItemsProps & { activePath?: string }) => {
   const [hovered, setHovered] = useState<number | null>(null);
 
   return (
     <motion.div
       onMouseLeave={() => setHovered(null)}
       className={cn(
-        "absolute inset-0 hidden flex-1 flex-row items-center justify-center space-x-2 text-sm font-medium text-foreground/80 transition duration-200 hover:text-foreground lg:flex lg:space-x-2",
+        "absolute inset-0 hidden flex-1 flex-row items-center justify-center space-x-2 text-sm font-bold text-foreground/80 transition duration-200 hover:text-foreground lg:flex lg:space-x-2",
         className,
       )}
     >
-      {items.map((item, idx) => (
-        <a
-          onMouseEnter={() => setHovered(idx)}
-          onClick={onItemClick}
-          className="relative px-4 py-2 text-foreground/80 hover:text-foreground transition-colors"
-          key={`link-${idx}`}
-          href={item.link}
-        >
-          {hovered === idx && (
-            <motion.div
-              layoutId="hovered"
-              className="absolute inset-0 h-full w-full rounded-full bg-primary/10"
-            />
-          )}
-          <span className="relative z-20">{item.name}</span>
-        </a>
-      ))}
+      {items.map((item, idx) => {
+        const isActive = activePath === item.link || (item.link !== "/" && activePath?.startsWith(item.link));
+        return (
+          <a
+            onMouseEnter={() => setHovered(idx)}
+            onClick={onItemClick}
+            className={cn(
+              "relative px-4 py-2 transition-colors",
+              isActive ? "text-foreground" : "text-foreground/80 hover:text-foreground"
+            )}
+            key={`link-${idx}`}
+            href={item.link}
+          >
+            {hovered === idx && (
+              <motion.div
+                layoutId="hovered"
+                className="absolute inset-0 h-full w-full rounded-full bg-primary/10"
+              />
+            )}
+            <span className="relative z-20">{item.name}</span>
+            {isActive && (
+              <motion.div
+                layoutId="active"
+                className="absolute bottom-1.5 left-4 right-4 h-0.5 rounded-full bg-[#76c7a6]"
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              />
+            )}
+          </a>
+        );
+      })}
     </motion.div>
   );
 };

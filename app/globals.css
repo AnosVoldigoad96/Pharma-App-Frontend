@@ -123,7 +123,7 @@
   --sidebar-ring: oklch(0.8348 0.1302 160.9080);
 
   /* Typography & Radius */
-  --font-sans: Outfit, sans-serif;
+  --font-sans: Roboto, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: monospace;
   --radius: 0.5rem;

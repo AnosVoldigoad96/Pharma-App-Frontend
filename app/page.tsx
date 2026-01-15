@@ -4,7 +4,8 @@ import { getBlogs, getBooks, getThreads, getSiteSettings, getPageContent, getFea
 import { Button } from "@/components/ui/button";
 import { FeaturesSection } from "@/components/features-section";
 import { BooksCarousel } from "@/components/books-carousel";
-import { CommunityHubSection } from "@/components/community-hub-section";
+import { FundingNoticeSection } from "@/components/funding-notice-section";
+import { FeaturedBlogsSection } from "@/components/featured-blogs-section";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { ArrowRight, BookOpen, FileText, MessageSquare, Clock, TrendingUp, Eye, ThumbsUp } from "lucide-react";
 import { HeroSection } from "@/components/hero-section";
@@ -85,10 +86,11 @@ export default async function Home() {
       {/* AI Chat Section */}
       <AiChatSection />
 
-      {/* Community Hub Section (Combined Forums & Blogs) */}
-      {(featuredThreads.length > 0 || featuredBlogs.length > 0) && (
-        <CommunityHubSection threads={featuredThreads} blogs={featuredBlogs} />
-      )}
+      {/* Featured Blogs Section */}
+      <FeaturedBlogsSection blogs={featuredBlogs} />
+
+      {/* Funding Notice Section */}
+      <FundingNoticeSection />
 
       {/* Enhanced CTA Section with Glassmorphism */}
       <section className="py-28 md:py-36 bg-primary text-primary-foreground relative overflow-hidden">
