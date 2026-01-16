@@ -7,7 +7,8 @@ import { useAudioChat } from "@/hooks/use-audio-chat";
 import { Button } from "@/components/ui/button";
 import { Mic, X, Loader2, Volume2, StopCircle, Play } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { PharmaBotMascot } from "@/components/pharma-bot-mascot";
+import Lottie from "lottie-react";
+import liveAnimation from "@/public/lottie/Live.json";
 
 export function AudioChatWidget() {
     const [isOpen, setIsOpen] = useState(false);
@@ -112,11 +113,11 @@ export function AudioChatWidget() {
                         </div>
 
                         {/* Content */}
-                        <div className="p-6 flex flex-col items-center justify-center min-h-[300px] space-y-6 relative">
+                        <div className="p-6 flex flex-col items-center justify-center min-h-[300px] space-y-4 relative">
 
                             {/* Mascot */}
-                            <div className="relative w-32 h-32">
-                                <PharmaBotMascot />
+                            <div className="relative w-40 h-40">
+                                <Lottie animationData={liveAnimation} loop={true} className="w-full h-full" />
                                 {state === "speaking" && (
                                     <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-full flex justify-center gap-1">
                                         <span className="w-1 h-1 bg-primary rounded-full animate-bounce"></span>
